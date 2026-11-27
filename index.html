@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>حبيب براند | أحذية بالة رياضية — قطعة بـ15 ألف وقطعتين بـ25 ألف</title>
-<meta name="description" content="حبيب براند — أحذية بالة رياضية نظيفة، قطعة وحدة من كل موديل. القطعة بـ15 ألف والقطعتين بـ25 ألف، توصيل مجاني لكل محافظات العراق وتبديل القياس مع المندوب. المحل في بسماية.">
+<meta name="description" content="حبيب براند — أحذية بالة رياضية نظيفة، قطعة وحدة من كل موديل. القطعة بـ15 ألف والقطعتين بـ25 ألف. زورنا بالمحل في بسماية وقيس براحتك، أو اطلب توصيل لكل محافظات العراق مع تبديل القياس مع المندوب.">
 <meta name="theme-color" content="#0b0b0d">
 <meta property="og:title" content="حبيب براند — أحذية بالة رياضية">
-<meta property="og:description" content="قطعة بـ15 ألف • قطعتين بـ25 ألف • توصيل مجاني لكل العراق • تبديل القياس مع المندوب">
+<meta property="og:description" content="قطعة بـ15 ألف • قطعتين بـ25 ألف • المحل في بسماية • توصيل لكل العراق">
 <meta property="og:image" content="assets/og.jpg">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/icon.png">
@@ -239,6 +239,27 @@ table.sz th{color:var(--lime)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .reveal{opacity:0;transform:translateY(20px);transition:all .6s}
 .reveal.in{opacity:1;transform:none}
+
+/* delivery modes */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.mode{text-align:right;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:2px}
+.mode b{font-size:15px}.mode small{color:var(--muted);font-size:12px;line-height:1.5}
+.mode.on{border-color:var(--lime);background:rgba(198,255,0,.07)}
+/* shop banner */
+.shop-banner{position:relative;overflow:hidden;border-radius:24px;padding:26px;background:linear-gradient(120deg,#c6ff00 0%,#a4e600 55%,#ff5a1f 140%);color:#0b0b0d;display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center}
+.shop-banner::after{content:"📍";position:absolute;left:-10px;bottom:-40px;font-size:190px;opacity:.12;transform:rotate(-12deg)}
+@media(max-width:760px){.shop-banner{grid-template-columns:1fr;padding:22px}}
+.shop-banner .k{display:inline-block;background:#0b0b0d;color:var(--lime);font-weight:900;font-size:13px;padding:4px 12px;border-radius:99px;margin-bottom:8px}
+.shop-banner h2{font-size:clamp(26px,4.4vw,40px);font-weight:900;line-height:1.2}
+.shop-banner p{font-weight:600;margin-top:6px;opacity:.85}
+.shop-banner .pts{display:grid;gap:8px;position:relative;z-index:1}
+.shop-banner .pt{background:rgba(11,11,13,.9);color:#fff;border-radius:14px;padding:10px 12px;font-weight:700;font-size:14px;display:flex;gap:8px;align-items:center}
+.shop-banner .row2{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1}
+.btn-dark{background:#0b0b0d;color:var(--lime)}
+.btn-line{border:2px solid #0b0b0d;color:#0b0b0d}
+.shop-tile{grid-column:1/-1;border-radius:var(--radius);padding:18px;background:linear-gradient(135deg,#1d1d22,#141417);border:1.5px dashed var(--lime);display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.shop-tile b{font-size:18px}.shop-tile p{color:var(--muted);font-size:14px}
+.pin-pill{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 14px;border-radius:12px;background:var(--lime);color:#0b0b0d;font-weight:900;font-size:14px}
 </style>
 </head>
 <body>
@@ -252,7 +273,7 @@ table.sz th{color:var(--lime)}
       <a href="#shoes">الأحذية</a><a href="#offers">العروض</a><a href="#how">شلون أطلب</a><a href="#store">موقع المحل</a><a href="#faq">أسئلة</a>
     </nav>
     <div class="nav-act">
-      <a class="icon-btn" href="#store" aria-label="موقع المحل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+      <a class="pin-pill" href="#store">📍 المحل</a>
       <button class="icon-btn" id="cartBtn" aria-label="السلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge-dot" id="cartCount">0</span></button>
     </div>
   </div>
@@ -265,25 +286,47 @@ table.sz th{color:var(--lime)}
       <div class="eyebrow"><span class="pulse"></span><span id="liveCount">أحذية جديدة كل يوم</span></div>
       <img class="hero-logo" src="assets/logo-white.png" alt="حبيب براند">
       <h1>قطعة وحدة من كل موديل…<br><em>واللي يسبق يلبس</em></h1>
-      <p class="lead">أحذية بالة رياضية نظيفة ومنتقاة بعناية. تختار من الموقع، تحجز بالواتساب، ويوصلك لباب البيت <b>مجاناً</b> لكل محافظات العراق.</p>
+      <p class="lead">أحذية بالة رياضية نظيفة ومنتقاة بعناية. تعال لمحلنا ببسماية وقيس براحتك، أو احجز من الموقع ويوصلك لباب البيت لكل محافظات العراق.</p>
       <div class="cta-row">
-        <a class="btn btn-lime" href="#shoes">تصفّح الأحذية 👟</a>
-        <a class="btn btn-ghost" href="#store">📍 زورنا بالمحل</a>
+        <a class="btn btn-lime" href="#store">📍 زورنا بالمحل</a>
+        <a class="btn btn-ghost" href="#shoes">تصفّح الأحذية 👟</a>
       </div>
     </div>
     <div class="price-cards">
       <div class="pcard"><small>القطعة الوحدة</small><div class="big" id="p1">15</div><div class="cur">ألف دينار</div></div>
       <div class="pcard hot"><span class="tag">الأوفر</span><small>أي قطعتين</small><div class="big" id="p2">25</div><div class="cur">ألف دينار</div></div>
       <div class="perks">
-        <div class="perk"><i>🚚</i>توصيل مجاني لكل المحافظات</div>
+        <div class="perk"><i>🏬</i>زورنا بالمحل وقيس براحتك</div>
         <div class="perk"><i>🔄</i>القياس ما ضبط؟ تبدله مع المندوب</div>
         <div class="perk"><i>💵</i>الدفع عند الاستلام</div>
-        <div class="perk"><i>✨</i>قطع نظيفة ومفحوصة</div>
+        <div class="perk"><i>🚚</i>توصيل لكل المحافظات <span class="dl"></span></div>
       </div>
     </div>
   </div>
 </section>
 
+
+<section id="visit" class="reveal" style="padding-top:10px;padding-bottom:10px">
+  <div class="wrap">
+    <div class="shop-banner">
+      <div style="position:relative;z-index:1">
+        <span class="k">البيع المباشر</span>
+        <h2>تعال لمحلنا ببسماية<br>وقيس براحتك 👟</h2>
+        <p class="b-addr"></p>
+        <div class="row2">
+          <a class="btn btn-dark js-maps" target="_blank" rel="noopener">🧭 خذني للمحل</a>
+          <a class="btn btn-line js-visit" target="_blank" rel="noopener">💬 احجز قطعة وتعال قيسها</a>
+        </div>
+      </div>
+      <div class="pts">
+        <div class="pt">👟 تقيس الحذاء برجلك قبل لا تشتري</div>
+        <div class="pt">💸 بدون أجور توصيل</div>
+        <div class="pt">🔥 تشوف القطع الجديدة أول ما توصل</div>
+        <div class="pt hours-pt" style="display:none">🕒 <span class="b-hours"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="offers" class="reveal">
   <div class="wrap">
     <div class="sec-head"><h2>العروض <span>🔥</span></h2><p>عروض حبيب براند الحالية</p></div>
@@ -315,7 +358,7 @@ table.sz th{color:var(--lime)}
     <div class="steps">
       <div class="step"><i>👀</i><h3>اختار حذاءك</h3><p>فلتر على قياسك وشوف القطع المتوفرة.</p></div>
       <div class="step"><i>💬</i><h3>احجز بالواتساب</h3><p>اضغط «احجزها» ورسالتك تنكتب جاهزة.</p></div>
-      <div class="step"><i>🚚</i><h3>يوصلك مجاناً</h3><p>لأي محافظة، وتدفع عند الاستلام.</p></div>
+      <div class="step"><i>🏬</i><h3>استلم بالمحل أو بالتوصيل</h3><p>تعال قيسها ببسماية، أو توصلك لأي محافظة بـ <span class="dl"></span>.</p></div>
       <div class="step"><i>🔄</i><h3>ما ضبط القياس؟</h3><p>تبدله أو ترجعه مع المندوب بنفس اللحظة.</p></div>
     </div>
   </div>
@@ -333,9 +376,11 @@ table.sz th{color:var(--lime)}
           <div>تقيس الحذاء بنفسك قبل لا تشتري</div>
           <div>تشوف كل القطع الجديدة أول بأول</div>
           <div>نفس الأسعار: قطعة 15 وقطعتين 25 ألف</div>
+          <div>بدون أجور توصيل</div>
         </div>
         <div class="cta-row" style="justify-content:flex-start">
           <a class="btn btn-lime" id="mapsBtn" target="_blank" rel="noopener">🧭 خذني للمحل</a>
+          <a class="btn btn-wa js-visit" target="_blank" rel="noopener">💬 احجز وتعال قيس</a>
           <a class="btn btn-ghost" id="callBtn">📞 اتصل بنا</a>
         </div>
       </div>
@@ -362,7 +407,7 @@ table.sz th{color:var(--lime)}
     <div class="sec-head"><h2>أسئلة <span>تتكرر</span></h2></div>
     <details><summary>شنو يعني أحذية بالة؟</summary><p>أحذية مستوردة منتقاة بعناية، نظيفة وجاهزة للبس. كل موديل عندنا قطعة وحدة بس، فإذا عجبك حذاء احجزه بسرعة.</p></details>
     <details><summary>بيش الأسعار؟</summary><p id="faqPrice"></p></details>
-    <details><summary>التوصيل بيش ووين يوصل؟</summary><p>التوصيل مجاني لكل محافظات العراق، والدفع عند الاستلام.</p></details>
+    <details><summary>التوصيل بيش ووين يوصل؟</summary><p>نوصل لكل محافظات العراق بـ <span class="dl"></span>، والدفع عند الاستلام. وإذا تحب توفّر أجور التوصيل، احجز وتعال استلم من محلنا ببسماية.</p></details>
     <details><summary>إذا القياس ما ضبط شسوي؟</summary><p>تكدر ترجع أو تبدل القطعة مع المندوب بنفس اللحظة إذا القياس ما يناسب رجلك.</p></details>
     <details><summary>شلون أعرف قياسي؟</summary><p>قيس طول رجلك من الكعب لرأس أطول إصبع بالسنتيمتر وقارنه بجدول القياسات. <button class="link-btn" data-size-guide>افتح جدول القياسات</button></p></details>
     <details><summary>أكدر أجي للمحل وأقيس؟</summary><p>أكيد، تفضل لمحلنا في بسماية. العنوان والخريطة موجودة بقسم «زورنا بالمحل».</p></details>
@@ -405,6 +450,8 @@ const saveCart=()=>{try{localStorage.setItem("hb_cart",JSON.stringify(cart))}cat
 const S=()=>D.settings||{};
 const p1=()=>Number(S().price1)||15000, p2=()=>Number(S().price2)||25000;
 const total=n=>Math.floor(n/2)*p2()+(n%2)*p1();
+const dlv=()=>{const v=Number(S().delivery);return isNaN(v)?5000:v};
+let cartMode="";
 const wa=(msg)=>"https://wa.me/"+(S().whatsapp||"9647710258672")+"?text="+encodeURIComponent(msg);
 const today=()=>new Date().toISOString().slice(0,10);
 const isNew=s=>{if(!s.added)return false;const d=(Date.now()-new Date(s.added+"T00:00:00").getTime())/864e5;return d<2};
@@ -433,7 +480,7 @@ function renderAll(){
   if(ann.length){const items=ann.map(a=>"<span>"+esc(a.text)+"</span>").join("");$("#tickerTrack").innerHTML=items+items+items+items}
   else $("#ticker").style.display="none";
   $("#p1").textContent=Math.round(p1()/1000);$("#p2").textContent=Math.round(p2()/1000);
-  $("#faqPrice").textContent="القطعة بـ "+fmt(p1())+" دينار، وأي قطعتين بـ "+fmt(p2())+" دينار. والتوصيل مجاني.";
+  $("#faqPrice").textContent="القطعة بـ "+fmt(p1())+" دينار، وأي قطعتين بـ "+fmt(p2())+" دينار. والتوصيل لكل المحافظات بـ "+fmt(dlv())+" دينار، والاستلام من المحل بدون أجور.";
   // offers
   const offs=D.offers.filter(o=>o.active!==false);
   $("#offers").style.display=offs.length?"":"none";
@@ -445,6 +492,12 @@ function renderAll(){
   $("#mapsBtn").href=safeUrl(s.mapsLink)||("https://www.google.com/maps/search/?api=1&query="+mq);
   $("#mapFrame").src="https://maps.google.com/maps?q="+mq+"&z=14&output=embed";
   $("#callBtn").href="tel:"+(s.phone||"");
+  const mapsUrl=safeUrl(s.mapsLink)||("https://www.google.com/maps/search/?api=1&query="+mq);
+  document.querySelectorAll(".js-maps").forEach(a=>a.href=mapsUrl);
+  document.querySelectorAll(".js-visit").forEach(a=>a.href=wa("هلا حبيب براند 👋\nأريد أجي للمحل ببسماية أشوف القطع وأقيس. شوكت تكونون فاتحين؟"));
+  document.querySelectorAll(".b-addr").forEach(e=>e.textContent="📍 "+(s.address||""));
+  document.querySelectorAll(".dl").forEach(e=>e.textContent=fmt(dlv())+" د.ع");
+  if(s.hours){document.querySelectorAll(".hours-pt").forEach(e=>e.style.display="");document.querySelectorAll(".b-hours").forEach(e=>e.textContent=s.hours)}
   // social
   $("#sGroup").href=safeUrl(s.group)||"#";if(!safeUrl(s.group))$("#sGroup").style.display="none";
   $("#sWa").href=wa("هلا حبيب براند 👋");$("#waNum").textContent=s.phone||"";
@@ -482,9 +535,12 @@ function renderGrid(){
   let list=D.shoes.filter(s=>!(hide&&s.status==="sold"));
   if(sizeFilter!=="all")list=list.filter(s=>(s.size?String(s.size):"؟")===sizeFilter);
   list.sort((a,b)=>(order[a.status]||0)-(order[b.status]||0)||(b.featured?1:0)-(a.featured?1:0)||String(b.added||"").localeCompare(String(a.added||"")));
-  $("#grid").innerHTML=list.length?list.map(shoeCard).join(""):'<div class="empty">ماكو قطع بهذا القياس هسه 😔<br>انضم لكروب الواتساب حتى توصلك القطع الجديدة أول بأول.</div>';
+  const tile='<div class="shop-tile"><div><b>📍 تحب تقيس قبل لا تشتري؟</b><p>تعال لمحلنا ببسماية — بدون أجور توصيل وتشوف القطع الجديدة أول بأول.</p></div><a class="btn btn-lime" href="#store">زورنا بالمحل</a></div>';
+  const cards=list.map(shoeCard);if(cards.length>4)cards.splice(4,0,tile);else if(cards.length)cards.push(tile);
+  $("#grid").innerHTML=list.length?cards.join(""):'<div class="empty">ماكو قطع بهذا القياس هسه 😔<br>انضم لكروب الواتساب حتى توصلك القطع الجديدة أول بأول.</div>';
   $("#grid").querySelectorAll("[data-book]").forEach(a=>{const s=D.shoes.find(x=>x.id===a.dataset.book);a.href=wa(bookMsg(s))});
 }
+function visitMsg(s){return "هلا حبيب براند 👋\nأريد أحجز هذا الحذاء وأجي أقيسه بالمحل:\n• "+(s.name||"حذاء")+"\n• القياس: "+(s.size||"—")+"\n• الكود: #"+s.id}
 function bookMsg(s){return "هلا حبيب براند 👋\nأريد أحجز هذا الحذاء:\n• "+(s.name||"حذاء")+"\n• القياس: "+(s.size||"—")+"\n• الكود: #"+s.id+"\n• السعر: "+fmt(p1())+" دينار\n"+location.origin+location.pathname+"#"+s.id}
 
 function openShoe(id){
@@ -495,8 +551,8 @@ function openShoe(id){
    '<h3>'+esc(s.name||"حذاء رياضي")+'</h3>'+(s.note?'<p class="note">'+esc(s.note)+'</p>':"")+st+
    '<div class="kv"><div><small>القياس</small><b>'+esc(s.size||"اسأل عنه")+'</b></div><div><small>السعر</small><b>'+fmt(p1())+' د.ع</b></div><div><small>الكود</small><b dir="ltr">#'+esc(s.id)+'</b></div><div><small>العدد</small><b>قطعة وحدة</b></div></div>'+
    (s.status==="available"?'<a class="btn btn-wa" target="_blank" rel="noopener" href="'+esc(wa(bookMsg(s)))+'">💬 احجزها بالواتساب</a><button class="btn btn-lime" data-add="'+esc(s.id)+'">'+(inCart?"✓ موجودة بالسلة":"＋ أضف للسلة (قطعتين بـ"+Math.round(p2()/1000)+" ألف)")+'</button>':'<a class="btn btn-ghost" href="#shoes" data-close>شوف قطع ثانية</a>')+
-   '<button class="btn btn-ghost" data-share="'+esc(s.id)+'">↗️ شارك الحذاء</button>'+
-   '<div class="assure"><span>🚚 توصيل مجاني لكل المحافظات</span><span>🔄 القياس ما ضبط؟ تبدله مع المندوب</span><span>💵 الدفع عند الاستلام</span></div></div></div>';
+   (s.status==="available"?'<a class="btn btn-ghost" target="_blank" rel="noopener" href="'+esc(wa(visitMsg(s)))+'">🏬 احجزها وتعال قيسها بالمحل</a>':"")+'<button class="btn btn-ghost" data-share="'+esc(s.id)+'">↗️ شارك الحذاء</button>'+
+   '<div class="assure"><span>🏬 تكدر تجي تقيسها بالمحل ببسماية</span><span>🚚 توصيل لكل المحافظات بـ '+fmt(dlv())+' د.ع</span><span>🔄 القياس ما ضبط؟ تبدله مع المندوب</span><span>💵 الدفع عند الاستلام</span></div></div></div>';
   const im=$("#zoomImg");let z=false;im.addEventListener("click",e=>{z=!z;if(z){const r=im.getBoundingClientRect();im.style.transformOrigin=((e.clientX-r.left)/r.width*100)+"% "+((e.clientY-r.top)/r.height*100)+"%";im.style.transform="scale(2)"}else im.style.transform=""});
   open("#pModal");
   if(location.hash!=="#"+s.id)history.replaceState(null,"","#"+s.id);
@@ -519,16 +575,21 @@ function openCart(){
   const items=cart.map(id=>D.shoes.find(x=>x.id===id)).filter(Boolean);
   const n=items.length;
   if(!n){$("#cBody").innerHTML='<h3>🛒 السلة</h3><div class="empty">السلة فارغة — اختار حذاءك واضغط ＋</div>';open("#cModal");return}
-  const full=n*p1(),t=total(n);
   let saved={};try{saved=JSON.parse(localStorage.getItem("hb_cust")||"{}")}catch(e){}
+  if(cartMode!=="pickup"&&cartMode!=="delivery")cartMode=saved.mode==="pickup"?"pickup":"delivery";
+  const full=n*p1(),t=total(n),del=cartMode==="delivery"?dlv():0,g=t+del;
   $("#cBody").innerHTML='<h3>🛒 السلة ('+n+')</h3>'+items.map(s=>'<div class="ci"><img src="'+esc(safeUrl(s.image))+'" alt=""><div class="t"><b>'+esc(s.name)+'</b><br><small>قياس '+esc(s.size||"—")+' • <span dir="ltr">#'+esc(s.id)+'</span></small></div><button data-add="'+esc(s.id)+'">حذف</button></div>').join("")+
    (n%2===1?'<div class="hint" style="margin-top:12px">💡 ضيف قطعة وحدة بعد وتصير القطعتين بـ '+fmt(p2())+' بدل '+fmt(p1()*2)+'</div>':"")+
-   '<div class="tot"><div><span>عدد القطع</span><b>'+n+'</b></div>'+(full>t?'<div><span>وفّرت</span><span class="save">'+fmt(full-t)+' د.ع</span></div>':"")+'<div><span>التوصيل</span><span class="save">مجاني</span></div><div><span>المجموع</span><span class="g">'+fmt(t)+' د.ع</span></div></div>'+
-   '<form class="form" id="orderForm"><div><label>الاسم</label><input name="name" required value="'+esc(saved.name||"")+'"></div><div><label>رقم الموبايل</label><input name="phone" inputmode="tel" required value="'+esc(saved.phone||"")+'"></div><div><label>المحافظة</label><select name="gov" required>'+GOVS.map(g=>'<option'+(saved.gov===g?" selected":"")+'>'+g+'</option>').join("")+'</select></div><div><label>العنوان (المنطقة وأقرب نقطة دالة)</label><input name="addr" required value="'+esc(saved.addr||"")+'"></div><button class="btn btn-wa" type="submit">💬 أرسل الطلب بالواتساب</button><small class="note">ترسل الطلب ونأكد وياك بالواتساب. الدفع عند الاستلام.</small></form>';
+   '<div class="modes"><button type="button" class="mode'+(cartMode==="pickup"?" on":"")+'" data-mode="pickup"><b>🏬 استلام من المحل</b><small>ببسماية • بدون أجور توصيل • تقيس قبل لا تاخذ</small></button><button type="button" class="mode'+(cartMode==="delivery"?" on":"")+'" data-mode="delivery"><b>🚚 توصيل لباب البيت</b><small>لكل المحافظات • '+fmt(dlv())+' د.ع</small></button></div>'+
+   '<div class="tot"><div><span>سعر القطع ('+n+')</span><b>'+fmt(t)+' د.ع</b></div>'+(full>t?'<div><span>وفّرت بالعرض</span><span class="save">'+fmt(full-t)+' د.ع</span></div>':"")+'<div><span>'+(cartMode==="delivery"?"التوصيل":"الاستلام من المحل")+'</span>'+(del?'<b>'+fmt(del)+' د.ع</b>':'<span class="save">بدون أجور</span>')+'</div><div><span>المجموع</span><span class="g">'+fmt(g)+' د.ع</span></div></div>'+
+   '<form class="form" id="orderForm"><div><label>الاسم</label><input name="name" required value="'+esc(saved.name||"")+'"></div><div><label>رقم الموبايل</label><input name="phone" inputmode="tel" required value="'+esc(saved.phone||"")+'"></div>'+
+   (cartMode==="delivery"?'<div><label>المحافظة</label><select name="gov" required>'+GOVS.map(x=>'<option'+(saved.gov===x?" selected":"")+'>'+x+'</option>').join("")+'</select></div><div><label>العنوان (المنطقة وأقرب نقطة دالة)</label><input name="addr" required value="'+esc(saved.addr||"")+'"></div>':'<div class="hint" style="background:rgba(198,255,0,.08);border-color:rgba(198,255,0,.35);color:var(--lime)">📍 '+esc(S().address||"")+'<br>نحجزلك القطع وتجي تقيسها وتستلمها بالمحل.</div>')+
+   '<button class="btn btn-wa" type="submit">💬 أرسل الطلب بالواتساب</button><small class="note">'+(cartMode==="delivery"?"ترسل الطلب ونأكد وياك بالواتساب. الدفع عند الاستلام، والقياس إذا ما ضبط تبدله مع المندوب.":"ترسل الحجز ونأكد وياك بالواتساب، وتدفع بالمحل.")+'</small></form>';
   $("#orderForm").addEventListener("submit",e=>{
-    e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
-    try{localStorage.setItem("hb_cust",JSON.stringify(f))}catch(_){}
-    const msg="طلب جديد من موقع حبيب براند 🛒\n\n"+items.map((s,i)=>(i+1)+") "+s.name+" — قياس "+(s.size||"—")+" — #"+s.id).join("\n")+"\n\nعدد القطع: "+n+"\nالمجموع: "+fmt(t)+" دينار (التوصيل مجاني)\n\nالاسم: "+f.name+"\nالموبايل: "+f.phone+"\nالمحافظة: "+f.gov+"\nالعنوان: "+f.addr;
+    e.preventDefault();const f=Object.fromEntries(new FormData(e.target));f.mode=cartMode;
+    try{localStorage.setItem("hb_cust",JSON.stringify({...saved,...f}))}catch(_){}
+    const head=cartMode==="delivery"?"طلب توصيل من موقع حبيب براند 🚚":"حجز للاستلام من المحل — موقع حبيب براند 🏬";
+    const msg=head+"\n\n"+items.map((s,i)=>(i+1)+") "+s.name+" — قياس "+(s.size||"—")+" — #"+s.id).join("\n")+"\n\nعدد القطع: "+n+"\nسعر القطع: "+fmt(t)+" دينار"+(cartMode==="delivery"?"\nالتوصيل: "+fmt(del)+" دينار":"\nالاستلام: من المحل ببسماية")+"\nالمجموع: "+fmt(g)+" دينار\n\nالاسم: "+f.name+"\nالموبايل: "+f.phone+(cartMode==="delivery"?"\nالمحافظة: "+f.gov+"\nالعنوان: "+f.addr:"");
     window.open(wa(msg),"_blank");
   });
   open("#cModal");
@@ -542,9 +603,10 @@ const SZ=[[38,24],[39,24.6],[40,25.3],[41,26],[42,26.6],[43,27.3],[44,28],[45,28
 $("#szBody").innerHTML=SZ.map(r=>"<tr><td><b>"+r[0]+"</b></td><td>"+r[1]+"</td></tr>").join("");
 
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-add],[data-open],[data-close],[data-size],[data-share],[data-size-guide],#cartBtn,#cartBar,#ov,#sizeGuideBtn");
+  const t=e.target.closest("[data-mode],[data-add],[data-open],[data-close],[data-size],[data-share],[data-size-guide],#cartBtn,#cartBar,#ov,#sizeGuideBtn");
   if(!t)return;
-  if(t.dataset.add){e.preventDefault();toggleCart(t.dataset.add)}
+  if(t.dataset.mode){const f=$("#orderForm");if(f){try{const o=JSON.parse(localStorage.getItem("hb_cust")||"{}");localStorage.setItem("hb_cust",JSON.stringify({...o,...Object.fromEntries(new FormData(f))}))}catch(_){}}cartMode=t.dataset.mode;openCart()}
+  else if(t.dataset.add){e.preventDefault();toggleCart(t.dataset.add)}
   else if(t.dataset.open){openShoe(t.dataset.open)}
   else if(t.hasAttribute("data-close")||t.id==="ov"){closeAll()}
   else if(t.dataset.size){sizeFilter=t.dataset.size;renderChips();renderGrid()}

@@ -126,7 +126,9 @@ details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font
       <label class="btn lime" style="flex:1">📸 إضافة أحذية جديدة<input type="file" id="pick" accept="image/*" multiple hidden></label>
       <button class="btn red sm" id="cleanSold">🧹 حذف كل المباع</button>
     </div>
-    <p class="muted" style="margin-top:6px">تكدر تختار عدة صور مرة وحدة، وتكتب قياس كل وحدة.</p>
+    <label class="check" style="margin-top:10px"><input type="checkbox" id="whiteBg"> ⬜ حط الحذاء على خلفية بيضاء احترافية (تلقائي)</label>
+    <p class="muted" style="margin-top:4px">تكدر تختار عدة صور مرة وحدة، وتكتب قياس كل وحدة. أول مرة تستخدم الخلفية البيضاء يحمّل الأداة (حوالي 40 ميغا) وبعدها تصير أسرع.</p>
+    <datalist id="sizesList"></datalist>
     <div id="stageWrap" class="hidden">
       <h2 style="margin-top:14px">أحذية جاهزة للإضافة</h2>
       <div class="stage" id="stage"></div>
@@ -223,6 +225,55 @@ function compress(file,max=1000){
   });
 }
 
+// ---------- white background ----------
+let BGLIB=null;
+async function bgLib(){
+  if(BGLIB)return BGLIB;
+  const urls=["https://esm.sh/@imgly/background-removal@1.7.0","https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm"];
+  let last;for(const u of urls){try{const m=await import(u);BGLIB=m.removeBackground||m.default;if(BGLIB)return BGLIB}catch(e){last=e}}
+  throw last||new Error("تعذر تحميل أداة الخلفية");
+}
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=()=>rej(new Error("صورة غير صالحة"));i.src=src})}
+async function downscale(blob,max=1200){
+  const u=URL.createObjectURL(blob);const img=await loadImg(u);URL.revokeObjectURL(u);
+  const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  return new Promise(r=>c.toBlob(r,"image/jpeg",.92));
+}
+// place a transparent cutout on a clean white studio background (4:5)
+async function studio(cutBlob){
+  const u=URL.createObjectURL(cutBlob);const img=await loadImg(u);URL.revokeObjectURL(u);
+  const w=img.naturalWidth,h=img.naturalHeight;
+  const t=document.createElement("canvas");t.width=w;t.height=h;const tx=t.getContext("2d");tx.drawImage(img,0,0);
+  const a=tx.getImageData(0,0,w,h).data;let x0=w,y0=h,x1=-1,y1=-1;
+  for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){if(a[(y*w+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
+  if(x1<0)throw new Error("ما انلكى الحذاء بالصورة");
+  const bw=x1-x0+1,bh=y1-y0+1;
+  const W=1000,H=1250,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  const bg=g.createRadialGradient(W/2,H*0.45,50,W/2,H*0.5,H*0.75);bg.addColorStop(0,"#ffffff");bg.addColorStop(1,"#eeeff2");
+  g.fillStyle=bg;g.fillRect(0,0,W,H);
+  const k=Math.min(W*0.84/bw,H*0.66/bh);const dw=bw*k,dh=bh*k,dx=(W-dw)/2,dy=(H-dh)/2-H*0.03;
+  // soft floor shadow
+  g.save();g.filter="blur(18px)";g.fillStyle="rgba(0,0,0,.22)";g.beginPath();g.ellipse(W/2,dy+dh+8,dw*0.42,22,0,0,Math.PI*2);g.fill();g.restore();
+  g.save();g.shadowColor="rgba(0,0,0,.16)";g.shadowBlur=30;g.shadowOffsetY=14;g.drawImage(t,x0,y0,bw,bh,dx,dy,dw,dh);g.restore();
+  let d=c.toDataURL("image/webp",.85),ext="webp";
+  if(!d.startsWith("data:image/webp")){d=c.toDataURL("image/jpeg",.88);ext="jpg"}
+  return{b64:d.split(",")[1],dataUrl:d,ext};
+}
+async function whiten(blob,label){
+  const rb=await bgLib();
+  busy(true,label+"<br><small>جاري تحميل أداة الخلفية…</small>");
+  const small=await downscale(blob);
+  const cut=await rb(small,{model:"isnet_quint8",output:{format:"image/png"},progress:(key,cur,tot)=>{if(tot)busy(true,label+"<br><small>تحميل الأداة "+Math.round(cur/tot*100)+"%</small>")}});
+  busy(true,label+"<br><small>جاري التبييض…</small>");
+  return studio(cut);
+}
+async function prepare(file,label){
+  if($("#whiteBg").checked){try{return await whiten(file,label)}catch(e){console.error(e);if(!prepare._warned){alert("ما كدرت أبيّض الخلفية ("+(e.message||e)+")، راح أضيف الصورة الأصلية. تأكد من الإنترنت وجرّب مرة ثانية.");prepare._warned=true}}}
+  return compress(file);
+}
+
 // ---------- state ----------
 let D=null,ORIG="",files={},preview={},stageItems=[],fStatus="all";
 const S=()=>D.settings;
@@ -232,6 +283,7 @@ function nextId(){let m=0;D.shoes.forEach(s=>{const n=parseInt(String(s.id).repl
 
 // ---------- render: shoes ----------
 function renderShoes(){
+  const sz=[...new Set(D.shoes.map(x=>String(x.size||"").trim()).filter(Boolean))].sort((a,b)=>parseFloat(a)-parseFloat(b));$("#sizesList").innerHTML=sz.map(v=>"<option value=\""+esc(v)+"\">").join("");
   const c={available:0,reserved:0,sold:0};D.shoes.forEach(s=>c[s.status]=(c[s.status]||0)+1);
   $("#cA").textContent=c.available;$("#cR").textContent=c.reserved;$("#cS").textContent=c.sold;
   const q=$("#search").value.trim();
@@ -247,9 +299,9 @@ function renderShoes(){
      </div></div>
     <div class="edit">
      <div class="field"><label>الاسم / الوصف القصير</label><input type="text" data-k="name" value="${esc(s.name)}"></div>
-     <div class="row"><div class="field" style="flex:1"><label>القياس</label><input type="text" inputmode="decimal" data-k="size" value="${esc(s.size)}"></div><div class="field" style="flex:1"><label>الصنف</label><input type="text" data-k="category" value="${esc(s.category||"")}"></div></div>
+     <div class="row"><div class="field" style="flex:1"><label>القياس</label><input type="text" inputmode="decimal" list="sizesList" data-k="size" value="${esc(s.size)}"></div><div class="field" style="flex:1"><label>الصنف</label><input type="text" data-k="category" value="${esc(s.category||"")}"></div></div>
      <div class="field"><label>ملاحظة (اختياري)</label><input type="text" data-k="note" value="${esc(s.note||"")}"></div>
-     <div class="row"><label class="check"><input type="checkbox" data-k="featured" ${s.featured?"checked":""}> 🔥 مميز</label><label class="btn sm">🖼️ تغيير الصورة<input type="file" accept="image/*" data-replace hidden></label></div>
+     <div class="row"><label class="check"><input type="checkbox" data-k="featured" ${s.featured?"checked":""}> 🔥 مميز</label><label class="btn sm">🖼️ تغيير الصورة<input type="file" accept="image/*" data-replace hidden></label><button class="btn sm" data-white>⬜ خلفية بيضاء</button></div>
     </div>
    </div>`).join(""):'<p class="muted">ماكو أحذية هنا.</p>';
 }
@@ -270,7 +322,7 @@ function renderAnn(){
    <div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" data-ak="active" ${a.active!==false?"checked":""}> ظاهر</label><button class="btn sm red" data-adel>حذف</button></div></div>`).join(""):'<p class="muted">ماكو تبليغات.</p>';
 }
 const SET_FIELDS=[
-  ["price1","سعر القطعة الوحدة (دينار)","number"],["price2","سعر القطعتين (دينار)","number"],
+  ["price1","سعر القطعة الوحدة (دينار)","number"],["price2","سعر القطعتين (دينار)","number"],["delivery","أجور التوصيل (دينار)","number"],
   ["phone","رقم الاتصال","tel"],["whatsapp","رقم الواتساب بالصيغة الدولية (مثل 9647710258672)","tel"],
   ["address","عنوان المحل","text"],["hours","أوقات الدوام (اختياري، مثال: يومياً 4 العصر - 11 بالليل)","text"],
   ["mapsLink","رابط موقع المحل من خرائط Google (انسخه من زر مشاركة الموقع)","url"],["mapsQuery","اسم المنطقة للخريطة المصغّرة","text"],
@@ -284,7 +336,7 @@ function renderAll(){renderShoes();renderOffers();renderAnn();renderSettings();d
 function renderStage(){
   $("#stageWrap").classList.toggle("hidden",!stageItems.length);
   $("#stage").innerHTML=stageItems.map((it,i)=>`<div class="st-item" data-si="${i}"><img src="${it.dataUrl}" alt=""><div class="in">
-    <input class="sz" type="text" inputmode="decimal" placeholder="القياس" value="${esc(it.size)}" data-sf="size">
+    <input class="sz" type="text" inputmode="decimal" list="sizesList" placeholder="القياس" value="${esc(it.size)}" data-sf="size">
     <input type="text" placeholder="الاسم (اختياري)" value="${esc(it.name)}" data-sf="name">
     <div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" data-sf="featured" ${it.featured?"checked":""}> مميز</label><button class="btn sm red" data-sdel>✕</button></div>
   </div></div>`).join("")+(stageItems.length?`<button class="btn lime" id="stageAdd" style="grid-column:1/-1">✓ أضف ${stageItems.length} للقائمة</button>`:"");
@@ -292,7 +344,7 @@ function renderStage(){
 $("#pick").addEventListener("change",async e=>{
   const fl=[...e.target.files];e.target.value="";if(!fl.length)return;
   busy(true,"جاري تجهيز الصور…");
-  for(const f of fl){try{const r=await compress(f);stageItems.push({...r,size:"",name:"",featured:false})}catch(err){alert(err.message)}}
+  prepare._warned=false;let i=0;for(const f of fl){i++;try{const r=await prepare(f,"صورة "+i+" من "+fl.length);stageItems.push({...r,size:"",name:"",featured:false})}catch(err){alert(err.message)}}
   busy(false);renderStage();
   const first=$("#stage .sz");first&&first.focus();
 });
@@ -319,6 +371,11 @@ $("#shoeList").addEventListener("click",e=>{
   const card=e.target.closest("[data-id]");if(!card)return;const s=findShoe(card);
   const st=e.target.closest("[data-st]");
   if(st){s.status=st.dataset.st;renderShoes();dirty();return}
+  if(e.target.closest("[data-white]")){(async()=>{try{
+      const src=imgSrc(s.image);const blob=await (await fetch(src)).blob();
+      const r=await whiten(blob,"تبييض خلفية #"+s.id);busy(false);
+      removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;s.image=path;renderShoes();dirty();
+    }catch(err){busy(false);alert("ما كدرت أبيّض الخلفية: "+(err.message||err))}})();return}
   if(e.target.closest("[data-edit]")){card.querySelector(".edit").classList.toggle("on");return}
   if(e.target.closest("[data-del]")){if(!confirm("تحذف الحذاء #"+s.id+" نهائياً؟"))return;removeImage(s.image);D.shoes=D.shoes.filter(x=>x!==s);renderShoes();dirty()}
 });
@@ -326,7 +383,7 @@ $("#shoeList").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)ret
 $("#shoeList").addEventListener("change",async e=>{
   if(e.target.dataset.k==="featured"){const s=findShoe(e.target);s.featured=e.target.checked;dirty()}
   if(e.target.hasAttribute("data-replace")){const f=e.target.files[0];if(!f)return;const s=findShoe(e.target);
-    const r=await compress(f);removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;s.image=path;renderShoes();dirty()}
+    prepare._warned=false;const r=await prepare(f,"جاري تجهيز الصورة");busy(false);removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;s.image=path;renderShoes();dirty()}
 });
 function removeImage(p){if(!p||!/^images\//.test(p))return;if(files[p]!==undefined&&files[p]!==null){delete files[p];delete preview[p]}else files[p]=null}
 $("#cleanSold").addEventListener("click",()=>{const sold=D.shoes.filter(s=>s.status==="sold");if(!sold.length)return alert("ماكو أحذية مباعة.");if(!confirm("تحذف "+sold.length+" حذاء مباع مع صورهم؟"))return;sold.forEach(s=>removeImage(s.image));D.shoes=D.shoes.filter(s=>s.status!=="sold");renderShoes();dirty()});
@@ -353,12 +410,12 @@ $("#addAnn").addEventListener("click",()=>{D.announcements.unshift({id:uid("a"),
 $("#annList").addEventListener("input",e=>{const k=e.target.dataset.ak;if(!k)return;const a=D.announcements[+e.target.closest("[data-i]").dataset.i];a[k]=e.target.type==="checkbox"?e.target.checked:e.target.value;dirty()});
 $("#annList").addEventListener("change",e=>{if(e.target.dataset.ak==="active"){D.announcements[+e.target.closest("[data-i]").dataset.i].active=e.target.checked;dirty()}});
 $("#annList").addEventListener("click",e=>{if(e.target.closest("[data-adel]")){D.announcements.splice(+e.target.closest("[data-i]").dataset.i,1);renderAnn();dirty()}});
-$("#setForm").addEventListener("input",e=>{const k=e.target.dataset.sk;if(!k)return;let v=e.target.value;if(k==="price1"||k==="price2")v=Number(v)||0;if(k==="whatsapp")v=v.replace(/\D/g,"");S()[k]=v;dirty()});
+$("#setForm").addEventListener("input",e=>{const k=e.target.dataset.sk;if(!k)return;let v=e.target.value;if(k==="price1"||k==="price2"||k==="delivery")v=Number(v)||0;if(k==="whatsapp")v=v.replace(/\D/g,"");S()[k]=v;dirty()});
 
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+b.dataset.tab))});
 
 // ---------- publish ----------
-function busy(on,t){$("#busy").classList.toggle("on",on);if(t)$("#busyTxt").textContent=t}
+function busy(on,t){$("#busy").classList.toggle("on",on);if(t)$("#busyTxt").innerHTML=t}
 $("#publish").addEventListener("click",async()=>{
   // validate links
   for(const k of ["mapsLink","group","tiktok","instagram","facebook"]){const v=S()[k];if(v&&!/^https:\/\//.test(v)){alert("الرابط لازم يبدي بـ https:// — "+k);return}}
@@ -388,6 +445,7 @@ async function start(){
     $("#loginView").classList.add("hidden");$("#appView").classList.remove("hidden");renderAll();busy(false);return true}
   catch(err){busy(false);$("#loginMsg").innerHTML='<div class="msg err">'+esc(err.status===401?"المفتاح غير صحيح أو منتهي.":err.status===404?"ما لكيت المستودع، تأكد من الاسم وصلاحية المفتاح عليه.":"تعذر الاتصال: "+err.message)+'</div>';return false}
 }
+$("#whiteBg").checked=LS.get("hb_white")!=="0";$("#whiteBg").addEventListener("change",e=>LS.set("hb_white",e.target.checked?"1":"0"));
 const g=guessRepo();
 $("#owner").value=LS.get("hb_owner")||g.owner;$("#repo").value=LS.get("hb_repo")||g.repo;
 if(location.hostname.endsWith(".github.io"))$("#repoFields").classList.add("hidden");

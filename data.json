@@ -12,23 +12,109 @@
     "group": "https://chat.whatsapp.com/IjmSk5XmwdUK9SyGnse0Tn",
     "facebook": "https://www.facebook.com/share/1BXjR92Tfv/",
     "instagram": "https://www.instagram.com/brand_habeb",
-    "tiktok": "https://www.tiktok.com/@habeb.basmaya"
+    "tiktok": "https://www.tiktok.com/@habeb.basmaya",
+    "delivery": 5000
   },
   "announcements": [
-    { "id": "a1", "text": "🔥 وصلت دفعة جديدة من الأحذية الرياضية — كل قطعة وحدة من موديلها", "active": true },
-    { "id": "a2", "text": "🚚 التوصيل مجاني لكل محافظات العراق", "active": true },
-    { "id": "a3", "text": "👟 القياس ما ضبط؟ تبدله مع المندوب بنفس اللحظة", "active": true }
+    {
+      "id": "a0",
+      "text": "📍 محلنا ببسماية — قرب البوابة الجديدة، خلف مطعم فاير فلاي، قيصرية ماركت الأخوين",
+      "active": true
+    },
+    {
+      "id": "a1",
+      "text": "🔥 وصلت دفعة جديدة من الأحذية الرياضية — كل قطعة وحدة من موديلها",
+      "active": true
+    },
+    {
+      "id": "a2",
+      "text": "🚚 التوصيل لكل محافظات العراق بـ 5,000 دينار — أو تعال استلم من محلنا ببسماية بدون أجور",
+      "active": true
+    },
+    {
+      "id": "a3",
+      "text": "👟 القياس ما ضبط؟ تبدله مع المندوب — أو تعال قيس بالمحل براحتك",
+      "active": true
+    }
   ],
   "offers": [
-    { "id": "o1", "title": "قطعتين بـ 25 ألف", "desc": "اختار أي حذائين من الموقع أو المحل ووفّر 5 آلاف دينار", "badge": "وفّر 5,000", "active": true },
-    { "id": "o2", "title": "التوصيل علينا", "desc": "توصيل مجاني لباب البيت بكل المحافظات، والدفع عند الاستلام", "badge": "مجاناً", "active": true },
-    { "id": "o3", "title": "زورنا بالمحل", "desc": "قيس براحتك وشوف كل القطع الجديدة قبل لا تنزل للموقع", "badge": "بسماية", "active": true }
+    {
+      "id": "o1",
+      "title": "قطعتين بـ 25 ألف",
+      "desc": "اختار أي حذائين من الموقع أو المحل ووفّر 5 آلاف دينار",
+      "badge": "وفّر 5,000",
+      "active": true
+    },
+    {
+      "id": "o2",
+      "title": "استلم من المحل ووفّر التوصيل",
+      "desc": "احجز من الموقع وتعال لمحلنا ببسماية، قيس براحتك واستلم بدون أجور توصيل",
+      "badge": "بسماية",
+      "active": true
+    },
+    {
+      "id": "o3",
+      "title": "توصيل لكل العراق",
+      "desc": "لباب البيت بـ 5,000 دينار، والدفع عند الاستلام، والقياس إذا ما ضبط تبدله مع المندوب",
+      "badge": "5,000 د.ع",
+      "active": true
+    }
   ],
   "shoes": [
-    { "id": "s1", "name": "رياضي برتقالي نيون", "size": "40", "category": "رياضي", "image": "images/s1.webp", "status": "available", "note": "نعال مريح للمشي والجري", "featured": true, "added": "2026-11-27" },
-    { "id": "s2", "name": "رياضي رمادي × أخضر", "size": "42", "category": "رياضي", "image": "images/s2.webp", "status": "available", "note": "", "featured": false, "added": "2026-11-27" },
-    { "id": "s3", "name": "رياضي أبيض × أزرق فاتح", "size": "44", "category": "رياضي", "image": "images/s3.webp", "status": "available", "note": "", "featured": true, "added": "2026-11-27" },
-    { "id": "s4", "name": "رياضي أسود × أحمر برتقالي", "size": "44", "category": "رياضي", "image": "images/s4.webp", "status": "available", "note": "", "featured": false, "added": "2026-11-27" },
-    { "id": "s5", "name": "رياضي رمادي × أصفر", "size": "", "category": "رياضي", "image": "images/s5.webp", "status": "available", "note": "", "featured": false, "added": "2026-11-27" }
+    {
+      "id": "s1",
+      "name": "رياضي برتقالي نيون",
+      "size": "40",
+      "category": "رياضي",
+      "image": "images/s1.webp",
+      "status": "available",
+      "note": "نعال مريح للمشي والجري",
+      "featured": true,
+      "added": "2026-11-27"
+    },
+    {
+      "id": "s2",
+      "name": "رياضي رمادي × أخضر",
+      "size": "42",
+      "category": "رياضي",
+      "image": "images/s2.webp",
+      "status": "available",
+      "note": "",
+      "featured": false,
+      "added": "2026-11-27"
+    },
+    {
+      "id": "s3",
+      "name": "رياضي أبيض × أزرق فاتح",
+      "size": "44",
+      "category": "رياضي",
+      "image": "images/s3.webp",
+      "status": "available",
+      "note": "",
+      "featured": true,
+      "added": "2026-11-27"
+    },
+    {
+      "id": "s4",
+      "name": "رياضي أسود × أحمر برتقالي",
+      "size": "44",
+      "category": "رياضي",
+      "image": "images/s4.webp",
+      "status": "available",
+      "note": "",
+      "featured": false,
+      "added": "2026-11-27"
+    },
+    {
+      "id": "s5",
+      "name": "رياضي رمادي × أصفر",
+      "size": "",
+      "category": "رياضي",
+      "image": "images/s5.webp",
+      "status": "available",
+      "note": "",
+      "featured": false,
+      "added": "2026-11-27"
+    }
   ]
 }
