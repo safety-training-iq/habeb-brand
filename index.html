@@ -521,7 +521,7 @@ function renderAll(){
   if(s.hours){$("#hoursRow").style.display="";$("#hours").textContent=s.hours}
   const mq=encodeURIComponent(s.mapsQuery||"مدينة بسماية الجديدة");
   $("#mapsBtn").href=safeUrl(s.mapsLink)||("https://www.google.com/maps/search/?api=1&query="+mq);
-  $("#mapFrame").src="https://maps.google.com/maps?q="+mq+"&z=14&output=embed";
+  $("#mapFrame").src="https://maps.google.com/maps?q="+mq+"&z=16&output=embed";
   $("#callBtn").href="tel:"+(s.phone||"");
   const mapsUrl=safeUrl(s.mapsLink)||("https://www.google.com/maps/search/?api=1&query="+mq);
   document.querySelectorAll(".js-maps").forEach(a=>a.href=mapsUrl);
