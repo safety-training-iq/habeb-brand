@@ -1,1 +1,24 @@
-{"name":"حبيب براند","short_name":"حبيب براند","start_url":"./","display":"standalone","background_color":"#0b0b0d","theme_color":"#0b0b0d","dir":"rtl","lang":"ar","icons":[{"src":"assets/icon.png","sizes":"512x512","type":"image/png"}]}
+{
+  "id": "./",
+  "name": "حبيب براند — أحذية بالة",
+  "short_name": "حبيب براند",
+  "description": "أحذية بالة رياضية — قطعة بـ15 ألف وقطعتين بـ25 ألف. المحل في بسماية.",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0b0d",
+  "theme_color": "#0b0b0d",
+  "dir": "rtl",
+  "lang": "ar",
+  "categories": ["shopping"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "الأحذية المتوفرة", "url": "./#shoes", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "موقع المحل", "url": "./#store", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

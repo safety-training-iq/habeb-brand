@@ -73,10 +73,24 @@ details.help{background:var(--card);border:1px solid var(--line);border-radius:1
 details.help summary{font-weight:700;cursor:pointer}
 details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font-size:14px;display:grid;gap:4px}
 .filter{display:flex;gap:6px;overflow-x:auto;margin:8px 0}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:none;place-items:center;font-weight:900;font-size:18px;text-align:center;padding:20px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:60;display:none;place-items:center;font-weight:900;font-size:18px;text-align:center;padding:20px}
 .overlay.on{display:grid}
 .spin{width:44px;height:44px;border:4px solid #333;border-top-color:var(--lime);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 12px}
 @keyframes sp{to{transform:rotate(360deg)}}
+
+.ed{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.85);display:none;overflow:auto;padding:12px 12px calc(16px + env(safe-area-inset-bottom))}
+.ed.on{display:block}
+.ed-in{max-width:460px;margin:0 auto;background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:12px}
+.ed-cv{border-radius:12px;overflow:hidden;background:#fff;touch-action:none}
+.ed-cv canvas{width:100%;height:auto;display:block;touch-action:none}
+.seg2{display:flex;gap:6px;margin-bottom:8px}
+.seg2 button{flex:1;padding:9px 6px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:14px}
+.seg2 button.on{background:var(--lime);color:#0b0b0d;border-color:var(--lime)}
+.seg2.tools{margin-top:6px}
+.sl{display:grid;gap:2px;margin:6px 0}
+.sl label{font-size:13px;font-weight:700;color:var(--muted)}
+.sl input{width:100%;accent-color:var(--lime)}
+.st-item .btn.sm{width:100%}
 </style>
 </head>
 <body>
@@ -113,6 +127,7 @@ details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font
       <button class="tab on" data-tab="shoes">👟 الأحذية</button>
       <button class="tab" data-tab="offers">🔥 العروض</button>
       <button class="tab" data-tab="ann">📢 التبليغات</button>
+      <button class="tab" data-tab="notify">🔔 إشعار</button>
       <button class="tab" data-tab="settings">⚙️ الإعدادات</button>
     </div>
   </div>
@@ -153,6 +168,20 @@ details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font
     <div id="annList"></div>
   </div>
 
+  <!-- NOTIFY -->
+  <div class="panel" id="p-notify">
+    <h2>إرسال إشعار للزباين 🔔</h2>
+    <p class="muted" style="margin-bottom:10px">يوصل للزباين اللي فعّلوا الجرس بالموقع. الإرسال يصير من لوحة OneSignal — هنا تجهّز النص وتنسخه.</p>
+    <div class="card">
+      <div class="row" style="margin-bottom:8px"><button class="btn sm" data-tpl="new">👟 نزلت قطع جديدة</button><button class="btn sm" data-tpl="offer">🔥 عرض</button><button class="btn sm" data-tpl="shop">📍 زورونا</button></div>
+      <div class="field"><label>العنوان</label><input type="text" id="nTitle"></div>
+      <div class="field"><label>الرسالة</label><textarea id="nMsg"></textarea></div>
+      <div class="field"><label>الرابط</label><input type="text" id="nUrl" dir="ltr"></div>
+      <div class="row"><button class="btn lime" id="nCopy" style="flex:1">📋 انسخ وافتح OneSignal</button></div>
+      <p class="muted" id="nNoApp" style="margin-top:8px"></p>
+    </div>
+  </div>
+
   <!-- SETTINGS -->
   <div class="panel" id="p-settings">
     <h2>الإعدادات</h2>
@@ -163,6 +192,21 @@ details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font
 <div class="pub" id="pubBar"><div class="wrap"><span><b id="pubN">0</b> تعديل غير منشور</span><div class="row"><button class="btn sm" id="discard">تراجع</button><button class="btn lime" id="publish">🚀 نشر على الموقع</button></div></div></div>
 </div>
 
+<div class="ed" id="edModal">
+  <div class="ed-in">
+    <div class="seg2"><button data-emode="white">⬜ خلفية بيضاء</button><button data-emode="orig">🖼️ الصورة الأصلية</button></div>
+    <div class="ed-cv"><canvas id="edCanvas" width="1000" height="1250"></canvas></div>
+    <p class="muted" id="edHint" style="text-align:center;margin:6px 0"></p>
+    <div id="edWhiteOnly">
+      <div class="seg2 tools"><button data-tool="move">✋ تحريك</button><button data-tool="erase">🧽 مسح</button><button data-tool="restore">🩹 استرجاع</button></div>
+      <div class="sl"><label>حجم الفرشاة</label><input type="range" id="edBrush" min="10" max="120"></div>
+      <div class="sl"><label>الحجم <b id="edScaleV"></b></label><input type="range" id="edScale" min="50" max="150"></div>
+      <div class="sl"><label>حدة القص <small class="muted">(قلّلها إذا انقص من الحذاء — زيدها إذا بقت بقايا خلفية)</small></label><input type="range" id="edTh" min="0" max="220"></div>
+      <div class="row" style="justify-content:space-between;margin:6px 0"><label class="check"><input type="checkbox" id="edShadow"> ظل تحت الحذاء</label><div class="row"><button class="btn sm" id="edUndo">↩️ تراجع</button><button class="btn sm" id="edCenter">🎯 توسيط</button><button class="btn sm" id="edReset">♻️ من جديد</button></div></div>
+    </div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="edCancel" style="flex:1">إلغاء</button><button class="btn lime" id="edSave" style="flex:2">✓ حفظ الصورة</button></div>
+  </div>
+</div>
 <div class="overlay" id="busy"><div><div class="spin"></div><div id="busyTxt">جاري النشر…</div></div></div>
 
 <script>
@@ -225,7 +269,7 @@ function compress(file,max=1000){
   });
 }
 
-// ---------- white background ----------
+// ---------- white background + image editor ----------
 let BGLIB=null;
 async function bgLib(){
   if(BGLIB)return BGLIB;
@@ -234,45 +278,126 @@ async function bgLib(){
   throw last||new Error("تعذر تحميل أداة الخلفية");
 }
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=()=>rej(new Error("صورة غير صالحة"));i.src=src})}
-async function downscale(blob,max=1200){
+async function toCanvas(blob,max=1200){
   const u=URL.createObjectURL(blob);const img=await loadImg(u);URL.revokeObjectURL(u);
   const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
   const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);
-  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-  return new Promise(r=>c.toBlob(r,"image/jpeg",.92));
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);return c;
 }
-// place a transparent cutout on a clean white studio background (4:5)
-async function studio(cutBlob){
-  const u=URL.createObjectURL(cutBlob);const img=await loadImg(u);URL.revokeObjectURL(u);
-  const w=img.naturalWidth,h=img.naturalHeight;
-  const t=document.createElement("canvas");t.width=w;t.height=h;const tx=t.getContext("2d");tx.drawImage(img,0,0);
-  const a=tx.getImageData(0,0,w,h).data;let x0=w,y0=h,x1=-1,y1=-1;
-  for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){if(a[(y*w+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
-  if(x1<0)throw new Error("ما انلكى الحذاء بالصورة");
-  const bw=x1-x0+1,bh=y1-y0+1;
-  const W=1000,H=1250,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
-  const bg=g.createRadialGradient(W/2,H*0.45,50,W/2,H*0.5,H*0.75);bg.addColorStop(0,"#ffffff");bg.addColorStop(1,"#eeeff2");
-  g.fillStyle=bg;g.fillRect(0,0,W,H);
-  const k=Math.min(W*0.84/bw,H*0.66/bh);const dw=bw*k,dh=bh*k,dx=(W-dw)/2,dy=(H-dh)/2-H*0.03;
-  // soft floor shadow
-  g.save();g.filter="blur(18px)";g.fillStyle="rgba(0,0,0,.22)";g.beginPath();g.ellipse(W/2,dy+dh+8,dw*0.42,22,0,0,Math.PI*2);g.fill();g.restore();
-  g.save();g.shadowColor="rgba(0,0,0,.16)";g.shadowBlur=30;g.shadowOffsetY=14;g.drawImage(t,x0,y0,bw,bh,dx,dy,dw,dh);g.restore();
-  let d=c.toDataURL("image/webp",.85),ext="webp";
-  if(!d.startsWith("data:image/webp")){d=c.toDataURL("image/jpeg",.88);ext="jpg"}
-  return{b64:d.split(",")[1],dataUrl:d,ext};
+const canvasBlob=(c,t="image/jpeg",q=.92)=>new Promise(r=>c.toBlob(r,t,q));
+function cloneCanvas(c){const n=document.createElement("canvas");n.width=c.width;n.height=c.height;n.getContext("2d").drawImage(c,0,0);return n}
+function alphaBBox(c){
+  const w=c.width,h=c.height,a=c.getContext("2d").getImageData(0,0,w,h).data;let x0=w,y0=h,x1=-1,y1=-1;
+  for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){if(a[(y*w+x)*4+3]>60){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
+  if(x1<0)return{x0:0,y0:0,bw:w,bh:h};
+  return{x0,y0,bw:x1-x0+1,bh:y1-y0+1};
 }
-async function whiten(blob,label){
+// edge hardness: alpha below th becomes 0, the rest stretched (keeps edges smooth)
+function applyTh(it){
+  const c=cloneCanvas(it.cutRaw),g=c.getContext("2d"),d=g.getImageData(0,0,c.width,c.height),a=d.data,th=it.th;
+  if(th>0){const sc=255/(255-th);for(let i=3;i<a.length;i+=4){const v=a[i];a[i]=v<=th?0:Math.min(255,(v-th)*sc)}g.putImageData(d,0,0)}
+  it.cutTh=c;
+}
+async function cutOut(it,label){
   const rb=await bgLib();
   busy(true,label+"<br><small>جاري تحميل أداة الخلفية…</small>");
-  const small=await downscale(blob);
-  const cut=await rb(small,{model:"isnet_quint8",output:{format:"image/png"},progress:(key,cur,tot)=>{if(tot)busy(true,label+"<br><small>تحميل الأداة "+Math.round(cur/tot*100)+"%</small>")}});
-  busy(true,label+"<br><small>جاري التبييض…</small>");
-  return studio(cut);
+  const blob=await canvasBlob(it.orig);
+  const out=await rb(blob,{model:"isnet_quint8",output:{format:"image/png"},progress:(k,cur,tot)=>{if(tot)busy(true,label+"<br><small>تحميل الأداة "+Math.round(cur/tot*100)+"%</small>")}});
+  busy(true,label+"<br><small>جاري فصل الحذاء عن الخلفية…</small>");
+  const u=URL.createObjectURL(out);const img=await loadImg(u);URL.revokeObjectURL(u);
+  const c=document.createElement("canvas");c.width=it.orig.width;c.height=it.orig.height;c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  it.cutRaw=c;applyTh(it);it.bbox=alphaBBox(it.cutTh);it.scale=1;it.ox=0;it.oy=0;it.undo=[];
 }
-async function prepare(file,label){
-  if($("#whiteBg").checked){try{return await whiten(file,label)}catch(e){console.error(e);if(!prepare._warned){alert("ما كدرت أبيّض الخلفية ("+(e.message||e)+")، راح أضيف الصورة الأصلية. تأكد من الإنترنت وجرّب مرة ثانية.");prepare._warned=true}}}
-  return compress(file);
+const OW=1000,OH=1250;
+function layout(it){
+  const b=it.bbox,k=Math.min(OW*0.84/b.bw,OH*0.66/b.bh)*it.scale;
+  const dw=b.bw*k,dh=b.bh*k;return{k,dw,dh,dx:(OW-dw)/2+it.ox,dy:(OH-dh)/2-OH*0.03+it.oy};
 }
+function compose(it,ctx,ghost){
+  const L=layout(it),b=it.bbox;
+  const bg=ctx.createRadialGradient(OW/2,OH*0.45,50,OW/2,OH*0.5,OH*0.75);bg.addColorStop(0,"#ffffff");bg.addColorStop(1,"#eeeff2");
+  ctx.fillStyle=bg;ctx.fillRect(0,0,OW,OH);
+  // draw the whole cut canvas with the same transform (so parts outside the original box still show)
+  const X=L.dx-b.x0*L.k,Y=L.dy-b.y0*L.k,Wd=it.cutTh.width*L.k,Hd=it.cutTh.height*L.k;
+  if(ghost){ctx.save();ctx.globalAlpha=.28;ctx.drawImage(it.orig,X,Y,Wd,Hd);ctx.restore()}
+  if(it.shadow){const rx=L.dw*0.46,ry=34;ctx.save();ctx.translate(OW/2+it.ox,L.dy+L.dh+6);ctx.scale(1,ry/rx);const sg=ctx.createRadialGradient(0,0,0,0,0,rx);sg.addColorStop(0,"rgba(0,0,0,.26)");sg.addColorStop(.55,"rgba(0,0,0,.10)");sg.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=sg;ctx.beginPath();ctx.arc(0,0,rx,0,Math.PI*2);ctx.fill();ctx.restore()}
+  ctx.save();if(it.shadow){ctx.shadowColor="rgba(0,0,0,.16)";ctx.shadowBlur=30;ctx.shadowOffsetY=14}ctx.drawImage(it.cutTh,X,Y,Wd,Hd);ctx.restore();
+}
+function exportCanvas(c,q){let d=c.toDataURL("image/webp",q||.85),ext="webp";if(!d.startsWith("data:image/webp")){d=c.toDataURL("image/jpeg",.88);ext="jpg"}return{b64:d.split(",")[1],dataUrl:d,ext}}
+function finalize(it){
+  if(it.mode==="white"&&it.cutTh){const c=document.createElement("canvas");c.width=OW;c.height=OH;compose(it,c.getContext("2d"),false);return exportCanvas(c)}
+  const o=it.orig,k=Math.min(1,1000/Math.max(o.width,o.height));const c=document.createElement("canvas");c.width=Math.round(o.width*k);c.height=Math.round(o.height*k);c.getContext("2d").drawImage(o,0,0,c.width,c.height);return exportCanvas(c,.8);
+}
+async function makeItem(blob,label,wantWhite){
+  const it={orig:await toCanvas(blob),mode:"orig",th:40,scale:1,ox:0,oy:0,shadow:true,undo:[]};
+  if(wantWhite){try{await cutOut(it,label);it.mode="white"}catch(e){console.error(e);if(!makeItem._warned){makeItem._warned=true;alert("ما كدرت أبيّض الخلفية ("+(e.message||e)+")، راح تبقى الصورة الأصلية. تأكد من الإنترنت وجرّب من زر «🎨 تحكم بالصورة».")}}}
+  Object.assign(it,finalize(it));return it;
+}
+
+// ---- editor UI ----
+let ED=null; // {it, onSave, tool, brush, drawing, last}
+function openEditor(it,onSave){
+  ED={it,onSave,tool:"move",brush:40,drawing:false,last:null,snap:JSON.stringify({mode:it.mode,th:it.th,scale:it.scale,ox:it.ox,oy:it.oy,shadow:it.shadow})};
+  it._rawBackup=it.cutRaw?cloneCanvas(it.cutRaw):null;
+  $("#edModal").classList.add("on");document.body.style.overflow="hidden";syncEditorUI();drawEditor();
+}
+function syncEditorUI(){
+  const it=ED.it,w=it.mode==="white";
+  document.querySelectorAll("#edModal [data-emode]").forEach(b=>b.classList.toggle("on",b.dataset.emode===it.mode));
+  document.querySelectorAll("#edModal [data-tool]").forEach(b=>b.classList.toggle("on",b.dataset.tool===ED.tool));
+  $("#edWhiteOnly").classList.toggle("hidden",!w);
+  $("#edScale").value=Math.round(it.scale*100);$("#edTh").value=it.th;$("#edBrush").value=ED.brush;$("#edShadow").checked=it.shadow;
+  $("#edScaleV").textContent=Math.round(it.scale*100)+"%";
+  $("#edUndo").disabled=!(it.undo&&it.undo.length);
+  $("#edHint").textContent=!w?"الصورة الأصلية بدون أي تعديل.":ED.tool==="move"?"اسحب الحذاء بإصبعك حتى تحركه. استخدم «الحجم» للتكبير والتصغير.":ED.tool==="erase"?"🧽 امسح بإصبعك أي شي زايد (إيد، أرضية، بقايا خلفية).":"🩹 لوّن بإصبعك على أي جزء من الحذاء انمسح بالغلط حتى يرجع.";
+}
+let rafPending=false;
+function drawEditor(){
+  if(rafPending)return;rafPending=true;
+  requestAnimationFrame(()=>{rafPending=false;const c=$("#edCanvas"),g=c.getContext("2d"),it=ED.it;
+    if(it.mode==="white"&&it.cutTh){compose(it,g,ED.tool==="restore")}
+    else{g.fillStyle="#fff";g.fillRect(0,0,OW,OH);const o=it.orig,k=Math.min(OW/o.width,OH/o.height);g.drawImage(o,(OW-o.width*k)/2,(OH-o.height*k)/2,o.width*k,o.height*k)}
+  });
+}
+function evPt(e){const c=$("#edCanvas"),r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*OW/r.width,y:(e.clientY-r.top)*OH/r.height}}
+function toCut(pt){const it=ED.it,L=layout(it),b=it.bbox;return{x:b.x0+(pt.x-L.dx)/L.k,y:b.y0+(pt.y-L.dy)/L.k,r:ED.brush/L.k}}
+function stamp(a,bp){
+  const it=ED.it,steps=Math.max(1,Math.ceil(Math.hypot(bp.x-a.x,bp.y-a.y)/(bp.r*0.35)));
+  for(const cv of [it.cutRaw,it.cutTh]){const g=cv.getContext("2d");
+    for(let i=1;i<=steps;i++){const x=a.x+(bp.x-a.x)*i/steps,y=a.y+(bp.y-a.y)*i/steps;
+      g.save();g.beginPath();g.arc(x,y,bp.r,0,Math.PI*2);
+      if(ED.tool==="erase"){g.globalCompositeOperation="destination-out";g.fill()}
+      else{g.clip();g.clearRect(x-bp.r,y-bp.r,bp.r*2,bp.r*2);g.drawImage(it.orig,0,0)}
+      g.restore()}}
+}
+function bindEditor(){
+  const c=$("#edCanvas");
+  c.addEventListener("pointerdown",e=>{if(!ED||ED.it.mode!=="white")return;e.preventDefault();c.setPointerCapture(e.pointerId);ED.drawing=true;const pt=evPt(e);
+    if(ED.tool==="move"){ED.last=pt}else{const it=ED.it;it.undo.push(cloneCanvas(it.cutRaw));if(it.undo.length>12)it.undo.shift();const cp=toCut(pt);ED.last=cp;stamp(cp,cp);drawEditor();syncEditorUI()}});
+  c.addEventListener("pointermove",e=>{if(!ED||!ED.drawing)return;e.preventDefault();const pt=evPt(e);
+    if(ED.tool==="move"){ED.it.ox+=pt.x-ED.last.x;ED.it.oy+=pt.y-ED.last.y;ED.last=pt}else{const cp=toCut(pt);stamp(ED.last,cp);ED.last=cp}drawEditor()});
+  const end=()=>{if(ED)ED.drawing=false};c.addEventListener("pointerup",end);c.addEventListener("pointercancel",end);
+  $("#edModal").addEventListener("click",async e=>{
+    const t=e.target.closest("button");if(!t||!ED)return;const it=ED.it;
+    if(t.dataset.emode){
+      if(t.dataset.emode==="white"&&!it.cutRaw){try{await cutOut(it,"تبييض الخلفية");busy(false)}catch(err){busy(false);alert("ما كدرت أبيّض الخلفية: "+(err.message||err));return}}
+      it.mode=t.dataset.emode;
+    }
+    else if(t.dataset.tool){ED.tool=t.dataset.tool}
+    else if(t.id==="edUndo"){const u=it.undo.pop();if(u){it.cutRaw=u;applyTh(it)}}
+    else if(t.id==="edCenter"){it.bbox=alphaBBox(it.cutTh);it.scale=1;it.ox=0;it.oy=0}
+    else if(t.id==="edReset"){if(!confirm("ترجع القص مثل ما سواه البرنامج أول مرة؟"))return;if(it._rawBackup){it.cutRaw=cloneCanvas(it._rawBackup)}it.th=40;applyTh(it);it.bbox=alphaBBox(it.cutTh);it.scale=1;it.ox=0;it.oy=0;it.undo=[]}
+    else if(t.id==="edCancel"){const o=JSON.parse(ED.snap);Object.assign(it,o);if(it._rawBackup){it.cutRaw=it._rawBackup;applyTh(it)}closeEditor();return}
+    else if(t.id==="edSave"){busy(true,"جاري حفظ الصورة…");setTimeout(()=>{Object.assign(it,finalize(it));busy(false);const cb=ED.onSave;closeEditor();cb&&cb(it)},30);return}
+    else return;
+    syncEditorUI();drawEditor();
+  });
+  $("#edScale").addEventListener("input",e=>{ED.it.scale=e.target.value/100;$("#edScaleV").textContent=e.target.value+"%";drawEditor()});
+  $("#edTh").addEventListener("change",e=>{ED.it.th=+e.target.value;applyTh(ED.it);drawEditor()});
+  $("#edBrush").addEventListener("input",e=>{ED.brush=+e.target.value});
+  $("#edShadow").addEventListener("change",e=>{ED.it.shadow=e.target.checked;drawEditor()});
+}
+function closeEditor(){$("#edModal").classList.remove("on");document.body.style.overflow="";if(ED&&ED.it)delete ED.it._rawBackup;ED=null}
 
 // ---------- state ----------
 let D=null,ORIG="",files={},preview={},stageItems=[],fStatus="all";
@@ -301,7 +426,7 @@ function renderShoes(){
      <div class="field"><label>الاسم / الوصف القصير</label><input type="text" data-k="name" value="${esc(s.name)}"></div>
      <div class="row"><div class="field" style="flex:1"><label>القياس</label><input type="text" inputmode="decimal" list="sizesList" data-k="size" value="${esc(s.size)}"></div><div class="field" style="flex:1"><label>الصنف</label><input type="text" data-k="category" value="${esc(s.category||"")}"></div></div>
      <div class="field"><label>ملاحظة (اختياري)</label><input type="text" data-k="note" value="${esc(s.note||"")}"></div>
-     <div class="row"><label class="check"><input type="checkbox" data-k="featured" ${s.featured?"checked":""}> 🔥 مميز</label><label class="btn sm">🖼️ تغيير الصورة<input type="file" accept="image/*" data-replace hidden></label><button class="btn sm" data-white>⬜ خلفية بيضاء</button></div>
+     <div class="row"><label class="check"><input type="checkbox" data-k="featured" ${s.featured?"checked":""}> 🔥 مميز</label><label class="btn sm">🖼️ تغيير الصورة<input type="file" accept="image/*" data-replace hidden></label><button class="btn sm" data-white>🎨 خلفية بيضاء / تحكم بالصورة</button></div>
     </div>
    </div>`).join(""):'<p class="muted">ماكو أحذية هنا.</p>';
 }
@@ -326,7 +451,7 @@ const SET_FIELDS=[
   ["phone","رقم الاتصال","tel"],["whatsapp","رقم الواتساب بالصيغة الدولية (مثل 9647710258672)","tel"],
   ["address","عنوان المحل","text"],["hours","أوقات الدوام (اختياري، مثال: يومياً 4 العصر - 11 بالليل)","text"],
   ["mapsLink","رابط موقع المحل من خرائط Google (انسخه من زر مشاركة الموقع)","url"],["mapsQuery","اسم المنطقة للخريطة المصغّرة","text"],
-  ["group","رابط كروب الواتساب","url"],["tiktok","رابط تيك توك","url"],["instagram","رابط انستغرام","url"],["facebook","رابط فيسبوك","url"]];
+  ["onesignalAppId","OneSignal App ID (لتفعيل جرس الإشعارات)","url"],["group","رابط كروب الواتساب","url"],["tiktok","رابط تيك توك","url"],["instagram","رابط انستغرام","url"],["facebook","رابط فيسبوك","url"]];
 function renderSettings(){
   $("#setForm").innerHTML=SET_FIELDS.map(([k,l,t])=>`<div class="field"><label>${l}</label><input type="${t==="number"?"number":t==="tel"?"tel":"text"}" ${t==="url"||t==="tel"?'dir="ltr"':""} data-sk="${k}" value="${esc(S()[k]??"")}"></div>`).join("");
 }
@@ -338,19 +463,21 @@ function renderStage(){
   $("#stage").innerHTML=stageItems.map((it,i)=>`<div class="st-item" data-si="${i}"><img src="${it.dataUrl}" alt=""><div class="in">
     <input class="sz" type="text" inputmode="decimal" list="sizesList" placeholder="القياس" value="${esc(it.size)}" data-sf="size">
     <input type="text" placeholder="الاسم (اختياري)" value="${esc(it.name)}" data-sf="name">
+    <button class="btn sm" data-sedit>🎨 تحكم بالصورة</button>
     <div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" data-sf="featured" ${it.featured?"checked":""}> مميز</label><button class="btn sm red" data-sdel>✕</button></div>
   </div></div>`).join("")+(stageItems.length?`<button class="btn lime" id="stageAdd" style="grid-column:1/-1">✓ أضف ${stageItems.length} للقائمة</button>`:"");
 }
 $("#pick").addEventListener("change",async e=>{
   const fl=[...e.target.files];e.target.value="";if(!fl.length)return;
   busy(true,"جاري تجهيز الصور…");
-  prepare._warned=false;let i=0;for(const f of fl){i++;try{const r=await prepare(f,"صورة "+i+" من "+fl.length);stageItems.push({...r,size:"",name:"",featured:false})}catch(err){alert(err.message)}}
+  makeItem._warned=false;let i=0;const ww=$("#whiteBg").checked;for(const f of fl){i++;try{busy(true,"صورة "+i+" من "+fl.length);const it=await makeItem(f,"صورة "+i+" من "+fl.length,ww);it.size="";it.name="";it.featured=false;stageItems.push(it)}catch(err){alert(err.message)}}
   busy(false);renderStage();
   const first=$("#stage .sz");first&&first.focus();
 });
 $("#stage").addEventListener("input",e=>{const el=e.target;const i=+el.closest("[data-si]").dataset.si;const k=el.dataset.sf;if(!k)return;stageItems[i][k]=el.type==="checkbox"?el.checked:el.value});
 $("#stage").addEventListener("change",e=>{const el=e.target;if(el.type==="checkbox"){const i=+el.closest("[data-si]").dataset.si;stageItems[i].featured=el.checked}});
 $("#stage").addEventListener("click",e=>{
+  if(e.target.closest("[data-sedit]")){const it=stageItems[+e.target.closest("[data-si]").dataset.si];openEditor(it,()=>renderStage());return}
   if(e.target.closest("[data-sdel]")){stageItems.splice(+e.target.closest("[data-si]").dataset.si,1);renderStage();return}
   if(e.target.id==="stageAdd"){
     const missing=stageItems.filter(x=>!String(x.size).trim()).length;
@@ -372,18 +499,19 @@ $("#shoeList").addEventListener("click",e=>{
   const st=e.target.closest("[data-st]");
   if(st){s.status=st.dataset.st;renderShoes();dirty();return}
   if(e.target.closest("[data-white]")){(async()=>{try{
-      const src=imgSrc(s.image);const blob=await (await fetch(src)).blob();
-      const r=await whiten(blob,"تبييض خلفية #"+s.id);busy(false);
-      removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;s.image=path;renderShoes();dirty();
-    }catch(err){busy(false);alert("ما كدرت أبيّض الخلفية: "+(err.message||err))}})();return}
+      busy(true,"جاري تجهيز الصورة…");const blob=await (await fetch(imgSrc(s.image))).blob();
+      makeItem._warned=false;const it=await makeItem(blob,"تبييض خلفية #"+s.id,true);busy(false);
+      openEditor(it,done=>{removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+done.ext;files[path]=done.b64;preview[path]=done.dataUrl;s.image=path;renderShoes();dirty()});
+    }catch(err){busy(false);alert("ما كدرت أجهّز الصورة: "+(err.message||err))}})();return}
   if(e.target.closest("[data-edit]")){card.querySelector(".edit").classList.toggle("on");return}
   if(e.target.closest("[data-del]")){if(!confirm("تحذف الحذاء #"+s.id+" نهائياً؟"))return;removeImage(s.image);D.shoes=D.shoes.filter(x=>x!==s);renderShoes();dirty()}
 });
 $("#shoeList").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;const s=findShoe(e.target);s[k]=e.target.type==="checkbox"?e.target.checked:e.target.value;dirty()});
 $("#shoeList").addEventListener("change",async e=>{
   if(e.target.dataset.k==="featured"){const s=findShoe(e.target);s.featured=e.target.checked;dirty()}
-  if(e.target.hasAttribute("data-replace")){const f=e.target.files[0];if(!f)return;const s=findShoe(e.target);
-    prepare._warned=false;const r=await prepare(f,"جاري تجهيز الصورة");busy(false);removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;s.image=path;renderShoes();dirty()}
+  if(e.target.hasAttribute("data-replace")){const f=e.target.files[0];e.target.value="";if(!f)return;const s=findShoe(e.target);
+    makeItem._warned=false;busy(true,"جاري تجهيز الصورة");const it=await makeItem(f,"جاري تجهيز الصورة",$("#whiteBg").checked);busy(false);
+    openEditor(it,done=>{removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+done.ext;files[path]=done.b64;preview[path]=done.dataUrl;s.image=path;renderShoes();dirty()})}
 });
 function removeImage(p){if(!p||!/^images\//.test(p))return;if(files[p]!==undefined&&files[p]!==null){delete files[p];delete preview[p]}else files[p]=null}
 $("#cleanSold").addEventListener("click",()=>{const sold=D.shoes.filter(s=>s.status==="sold");if(!sold.length)return alert("ماكو أحذية مباعة.");if(!confirm("تحذف "+sold.length+" حذاء مباع مع صورهم؟"))return;sold.forEach(s=>removeImage(s.image));D.shoes=D.shoes.filter(s=>s.status!=="sold");renderShoes();dirty()});
@@ -418,6 +546,7 @@ document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.cl
 function busy(on,t){$("#busy").classList.toggle("on",on);if(t)$("#busyTxt").innerHTML=t}
 $("#publish").addEventListener("click",async()=>{
   // validate links
+  S().onesignalAppId=String(S().onesignalAppId||"").trim();
   for(const k of ["mapsLink","group","tiktok","instagram","facebook"]){const v=S()[k];if(v&&!/^https:\/\//.test(v)){alert("الرابط لازم يبدي بـ https:// — "+k);return}}
   busy(true,"جاري النشر على الموقع…");
   try{
@@ -446,6 +575,21 @@ async function start(){
   catch(err){busy(false);$("#loginMsg").innerHTML='<div class="msg err">'+esc(err.status===401?"المفتاح غير صحيح أو منتهي.":err.status===404?"ما لكيت المستودع، تأكد من الاسم وصلاحية المفتاح عليه.":"تعذر الاتصال: "+err.message)+'</div>';return false}
 }
 $("#whiteBg").checked=LS.get("hb_white")!=="0";$("#whiteBg").addEventListener("change",e=>LS.set("hb_white",e.target.checked?"1":"0"));
+bindEditor();
+const siteUrl=()=>location.origin+location.pathname.replace(/admin\.html.*$/,"");
+const TPL={
+  new:()=>{const n=D.shoes.filter(x=>x.status==="available"&&x.added===todayLocal()).length;const sz=[...new Set(D.shoes.filter(x=>x.status==="available"&&x.added===todayLocal()).map(x=>x.size).filter(Boolean))].join("، ");return["👟 نزلت قطع جديدة!",(n?n+" قطعة جديدة":"قطع جديدة")+(sz?" — قياسات "+sz:"")+". كل حذاء قطعة وحدة، اللي يسبق يلبس 🔥"]},
+  offer:()=>["🔥 عرض حبيب براند","قطعتين بـ "+(S().price2||25000).toLocaleString("en-US")+" دينار — اختار من الموقع أو تعال للمحل"],
+  shop:()=>["📍 تعال لمحلنا ببسماية","قيس براحتك وشوف القطع الجديدة — بدون أجور توصيل"]};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-tpl]");if(!b||!D)return;const [t,m]=TPL[b.dataset.tpl]();$("#nTitle").value=t;$("#nMsg").value=m;$("#nUrl").value=siteUrl()});
+$("#nCopy").addEventListener("click",async()=>{
+  const id=(S().onesignalAppId||"").trim();
+  const txt=$("#nTitle").value+"\n"+$("#nMsg").value;
+  try{await navigator.clipboard.writeText(txt)}catch(e){}
+  if(!id){$("#nNoApp").textContent="⚠️ لازم تحط OneSignal App ID بالإعدادات أول وتنشر.";return}
+  window.open("https://dashboard.onesignal.com/apps/"+encodeURIComponent(id)+"/notifications","_blank");
+  alert("انتسخ النص ✓\nبلوحة OneSignal: New Message ← Push ← الصق العنوان والرسالة، وبخانة Launch URL حط:\n"+($("#nUrl").value||siteUrl()));
+});
 const g=guessRepo();
 $("#owner").value=LS.get("hb_owner")||g.owner;$("#repo").value=LS.get("hb_repo")||g.repo;
 if(location.hostname.endsWith(".github.io"))$("#repoFields").classList.add("hidden");

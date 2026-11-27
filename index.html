@@ -10,8 +10,12 @@
 <meta property="og:description" content="قطعة بـ15 ألف • قطعتين بـ25 ألف • المحل في بسماية • توصيل لكل العراق">
 <meta property="og:image" content="assets/og.jpg">
 <meta property="og:type" content="website">
-<link rel="icon" href="assets/icon.png">
-<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="حبيب براند">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -198,7 +202,7 @@ footer img{height:48px;margin:0 auto 10px;opacity:.9}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
 
 /* modal / drawer */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:60;display:none;backdrop-filter:blur(4px)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:60;display:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .ov.on{display:block}
 .modal{position:fixed;z-index:61;inset:auto 0 0 0;max-height:92vh;overflow:auto;background:var(--bg2);border-radius:24px 24px 0 0;border-top:1px solid var(--line);transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);padding-bottom:var(--safe-b)}
 .modal{visibility:hidden}.modal.on{transform:none;visibility:visible}
@@ -260,6 +264,27 @@ table.sz th{color:var(--lime)}
 .shop-tile{grid-column:1/-1;border-radius:var(--radius);padding:18px;background:linear-gradient(135deg,#1d1d22,#141417);border:1.5px dashed var(--lime);display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .shop-tile b{font-size:18px}.shop-tile p{color:var(--muted);font-size:14px}
 .pin-pill{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 14px;border-radius:12px;background:var(--lime);color:#0b0b0d;font-weight:900;font-size:14px}
+
+.bell-dot{position:absolute;top:8px;left:9px;width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 2px var(--bg);display:none}
+.bell-dot.on{display:block}
+#bellBtn.on{color:var(--lime);border-color:rgba(198,255,0,.5)}
+#bellBtn.ring svg{animation:ring 1.2s ease 2}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(16deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}}
+.install-bar{display:none;background:#141417;border-bottom:1px solid var(--line)}
+.install-bar.on{display:block}
+.ib-in{display:flex;align-items:center;gap:10px;padding-top:8px;padding-bottom:8px}
+.ib-in img{width:40px;height:40px;border-radius:10px}
+.ib-in div{flex:1;line-height:1.3}.ib-in b{font-size:14px}.ib-in small{display:block;color:var(--muted);font-size:12px}
+.ib-in .btn{padding:8px 14px;font-size:14px}
+.ib-x{font-size:22px;color:var(--muted);width:32px}
+.big-ico{font-size:52px;text-align:center;line-height:1;margin:6px 0 4px}
+.sheet-c{text-align:center}
+.sheet-c p{color:var(--muted);margin:6px 0 14px}
+.sheet-c .btn{width:100%;margin-top:8px}
+.steps-ios{text-align:right;display:grid;gap:10px;margin:12px 0}
+.steps-ios div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center;font-weight:600}
+.steps-ios b{background:var(--lime);color:#0b0b0d;min-width:28px;height:28px;border-radius:50%;display:grid;place-items:center}
+.ios-share{display:inline-block;vertical-align:middle;width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -274,10 +299,12 @@ table.sz th{color:var(--lime)}
     </nav>
     <div class="nav-act">
       <a class="pin-pill" href="#store">📍 المحل</a>
+      <button class="icon-btn" id="bellBtn" aria-label="الإشعارات"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="bell-dot" id="bellDot"></span></button>
       <button class="icon-btn" id="cartBtn" aria-label="السلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge-dot" id="cartCount">0</span></button>
     </div>
   </div>
 </header>
+<div class="install-bar" id="installBar"><div class="wrap ib-in"><img src="assets/icon-192.png" alt=""><div><b>ثبّت تطبيق حبيب براند</b><small>يفتح أسرع وتوصلك القطع الجديدة</small></div><button class="btn btn-lime" id="installBtn">تثبيت</button><button class="ib-x" id="installX" aria-label="إغلاق">×</button></div></div>
 
 <section class="hero">
   <div class="stripes"></div>
@@ -417,6 +444,7 @@ table.sz th{color:var(--lime)}
 <footer>
   <img src="assets/logo-white.png" alt="حبيب براند">
   <div>حبيب براند — أحذية بالة رياضية • بسماية، بغداد</div>
+  <div style="margin:12px 0"><button class="btn btn-ghost" id="installBtn2">📲 ثبّت التطبيق على موبايلك</button></div>
   <div style="margin-top:6px">© <span id="yr"></span> جميع الحقوق محفوظة</div>
 </footer>
 
@@ -432,6 +460,8 @@ table.sz th{color:var(--lime)}
   <table class="sz"><thead><tr><th>القياس (EU)</th><th>طول الرجل (سم)</th></tr></thead><tbody id="szBody"></tbody></table>
   <p class="note" style="margin-top:10px">مو متأكد؟ لا تشيل هم — القياس إذا ما ضبط تبدله مع المندوب.</p>
 </div></div>
+<div class="modal" id="bModal" role="dialog" aria-modal="true"><button class="m-close" data-close>×</button><div class="drawer-in" id="bBody"></div></div>
+<div class="modal" id="iModal" role="dialog" aria-modal="true"><button class="m-close" data-close>×</button><div class="drawer-in" id="iBody"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -470,6 +500,7 @@ async function load(){
   // drop cart items that no longer exist / sold
   cart=cart.filter(id=>{const s=D.shoes.find(x=>x.id===id);return s&&s.status==="available"});saveCart();
   renderAll();
+  if(!window._pushInit){window._pushInit=1;initPush()}
   openFromHash();
 }
 
@@ -603,9 +634,12 @@ const SZ=[[38,24],[39,24.6],[40,25.3],[41,26],[42,26.6],[43,27.3],[44,28],[45,28
 $("#szBody").innerHTML=SZ.map(r=>"<tr><td><b>"+r[0]+"</b></td><td>"+r[1]+"</td></tr>").join("");
 
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-mode],[data-add],[data-open],[data-close],[data-size],[data-share],[data-size-guide],#cartBtn,#cartBar,#ov,#sizeGuideBtn");
+  const t=e.target.closest("[data-install],[data-push],[data-copy],[data-mode],[data-add],[data-open],[data-close],[data-size],[data-share],[data-size-guide],#cartBtn,#cartBar,#ov,#sizeGuideBtn");
   if(!t)return;
-  if(t.dataset.mode){const f=$("#orderForm");if(f){try{const o=JSON.parse(localStorage.getItem("hb_cust")||"{}");localStorage.setItem("hb_cust",JSON.stringify({...o,...Object.fromEntries(new FormData(f))}))}catch(_){}}cartMode=t.dataset.mode;openCart()}
+  if(t.hasAttribute("data-install")){installHelp()}
+  else if(t.dataset.push){t.dataset.push==="on"?pushOn():pushOff()}
+  else if(t.hasAttribute("data-copy")){const u=location.origin+location.pathname;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("انتسخ الرابط ✓"),()=>prompt("انسخ الرابط:",u))}
+  else if(t.dataset.mode){const f=$("#orderForm");if(f){try{const o=JSON.parse(localStorage.getItem("hb_cust")||"{}");localStorage.setItem("hb_cust",JSON.stringify({...o,...Object.fromEntries(new FormData(f))}))}catch(_){}}cartMode=t.dataset.mode;openCart()}
   else if(t.dataset.add){e.preventDefault();toggleCart(t.dataset.add)}
   else if(t.dataset.open){openShoe(t.dataset.open)}
   else if(t.hasAttribute("data-close")||t.id==="ov"){closeAll()}
@@ -620,6 +654,99 @@ window.addEventListener("hashchange",openFromHash);
 $("#yr").textContent=new Date().getFullYear();
 const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target)}}),{threshold:.12});
 document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+// ================= PWA: install + service worker =================
+const UA=navigator.userAgent||"";
+const isIOS=/iphone|ipad|ipod/i.test(UA)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const inApp=/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Bytedance|Snapchat|Line\//i.test(UA);
+const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+let deferredPrompt=null;
+const BASE=location.pathname.replace(/[^/]*$/,"");
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;showInstallBar()});
+window.addEventListener("appinstalled",()=>{deferredPrompt=null;$("#installBar").classList.remove("on");toast("✓ انثبت التطبيق")});
+function showInstallBar(){
+  if(isStandalone())return;
+  let x=0;try{x=+localStorage.getItem("hb_ib_x")||0}catch(e){}
+  if(Date.now()-x<3*864e5)return;
+  $("#installBar").classList.add("on");
+}
+const shareSvg='<svg class="ios-share" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+function installHelp(reason){
+  let h='<div class="sheet-c"><div class="big-ico">📲</div><h3>ثبّت تطبيق حبيب براند</h3>';
+  if(reason)h+='<p>'+reason+'</p>';
+  if(inApp){
+    h+='<p>انت فاتح الموقع من داخل تطبيق (انستغرام / تيك توك / فيسبوك). حتى تثبته لازم تفتحه بالمتصفح:</p><div class="steps-ios"><div><b>1</b>اضغط على النقاط ⋯ بأعلى الشاشة</div><div><b>2</b>اختار «فتح في المتصفح» أو «Open in browser»</div><div><b>3</b>وبعدها ارجع اضغط «ثبّت التطبيق»</div></div><button class="btn btn-lime" data-copy>📋 انسخ رابط الموقع</button>';
+  }else if(isIOS){
+    h+='<p>بالآيفون التثبيت يصير من زر المشاركة:</p><div class="steps-ios"><div><b>1</b>اضغط زر المشاركة '+shareSvg+' (بأسفل أو أعلى الشاشة)</div><div><b>2</b>انزل واختار «إضافة إلى الشاشة الرئيسية» ➕</div><div><b>3</b>اضغط «إضافة» — ويطلع أيقونة حبيب براند بموبايلك</div></div><p style="font-size:13px">إذا ما لكيت الخيار، افتح الموقع من متصفح Safari.</p>';
+  }else{
+    h+='<p>من قائمة المتصفح:</p><div class="steps-ios"><div><b>1</b>اضغط على النقاط ⋮ بأعلى المتصفح</div><div><b>2</b>اختار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»</div><div><b>3</b>اضغط «تثبيت»</div></div>';
+  }
+  $("#iBody").innerHTML=h+'</div>';open("#iModal");
+}
+async function doInstall(){
+  if(isStandalone()){toast("التطبيق مثبّت عندك ✓");return}
+  if(deferredPrompt){deferredPrompt.prompt();const r=await deferredPrompt.userChoice.catch(()=>({}));deferredPrompt=null;if(r&&r.outcome==="accepted")$("#installBar").classList.remove("on");return}
+  installHelp();
+}
+$("#installBtn").addEventListener("click",doInstall);$("#installBtn2").addEventListener("click",doInstall);
+$("#installX").addEventListener("click",()=>{$("#installBar").classList.remove("on");try{localStorage.setItem("hb_ib_x",Date.now())}catch(e){}});
+if(isStandalone()){$("#installBtn2").style.display="none"}
+else if(isIOS||inApp){setTimeout(showInstallBar,4000)}
+
+// ================= Notifications (bell) =================
+let OS=null,osReady=false;
+function pushSupported(){return "serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window}
+function setBell(on){$("#bellBtn").classList.toggle("on",!!on);$("#bellDot").classList.toggle("on",!!on)}
+function initPush(){
+  const appId=(S().onesignalAppId||"").trim();
+  if("serviceWorker" in navigator&&!appId){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+  if(!appId)return;
+  window.OneSignalDeferred=window.OneSignalDeferred||[];
+  const sc=document.createElement("script");sc.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";sc.defer=true;document.head.appendChild(sc);
+  OneSignalDeferred.push(async function(OneSignal){
+    try{
+      await OneSignal.init({appId,serviceWorkerPath:BASE.slice(1)+"sw.js",serviceWorkerParam:{scope:BASE},notifyButton:{enable:false},allowLocalhostAsSecureOrigin:true});
+      OS=OneSignal;osReady=true;
+      setBell(OneSignal.User.PushSubscription.optedIn);
+      OneSignal.User.PushSubscription.addEventListener("change",ev=>setBell(ev.current.optedIn));
+    }catch(e){console.warn("push init",e)}
+  });
+}
+function bellSheet(){
+  const appId=(S().onesignalAppId||"").trim();
+  const grp=safeUrl(S().group);
+  const grpBtn=grp?'<a class="btn btn-ghost" href="'+esc(grp)+'" target="_blank" rel="noopener">👥 انضم لكروب الواتساب</a>':"";
+  let h='<div class="sheet-c"><div class="big-ico">🔔</div><h3>إشعارات القطع الجديدة</h3>';
+  if(!appId){
+    h+='<p>الإشعارات راح تتفعل قريباً. لحد ذاك، انضم لكروب الواتساب وتوصلك كل القطع الجديدة أول بأول.</p>'+grpBtn;
+  }else if(inApp){
+    h+='<p>حتى تفعّل الإشعارات، افتح الموقع بالمتصفح أو ثبّت التطبيق.</p><button class="btn btn-lime" data-install>📲 شلون أثبّته؟</button>'+grpBtn;
+  }else if(isIOS&&!isStandalone()){
+    h+='<p>بالآيفون الإشعارات تشتغل بس بعد ما تثبّت التطبيق على الشاشة الرئيسية. ثبّته، افتحه من الأيقونة، واضغط الجرس مرة ثانية.</p><button class="btn btn-lime" data-install>📲 ثبّت التطبيق</button>'+grpBtn;
+  }else if(!pushSupported()){
+    h+='<p>متصفحك ما يدعم الإشعارات. جرّب Chrome أو ثبّت التطبيق.</p>'+grpBtn;
+  }else if(Notification.permission==="denied"){
+    h+='<p>الإشعارات مقفولة من إعدادات المتصفح. افتح إعدادات الموقع (🔒 جنب الرابط) وسمح بالإشعارات، وبعدها ارجع اضغط الجرس.</p>'+grpBtn;
+  }else if(osReady&&OS.User.PushSubscription.optedIn){
+    h+='<p>الإشعارات مفعّلة ✓ — راح يوصلك إشعار كل ما تنزل قطع جديدة أو عروض.</p><button class="btn btn-ghost" data-push="off">🔕 إيقاف الإشعارات</button>';
+  }else{
+    h+='<p>فعّل الجرس وخلّك أول واحد يعرف بالقطع الجديدة والعروض — كل حذاء قطعة وحدة واللي يسبق يلبس!</p><button class="btn btn-lime" data-push="on">🔔 فعّل الإشعارات</button>'+grpBtn;
+  }
+  $("#bBody").innerHTML=h+'</div>';open("#bModal");
+}
+async function pushOn(){
+  if(!osReady){toast("لحظة… جاري التجهيز");setTimeout(()=>osReady?pushOn():toast("تعذر التفعيل، حدّث الصفحة وجرّب"),2500);return}
+  try{
+    if(Notification.permission!=="granted")await OS.Notifications.requestPermission();
+    if(Notification.permission==="granted"){await OS.User.PushSubscription.optIn();setBell(true);closeAll();toast("🔔 تفعّلت الإشعارات!")}
+    else bellSheet();
+  }catch(e){toast("تعذر التفعيل")}
+}
+async function pushOff(){try{await OS.User.PushSubscription.optOut();setBell(false);closeAll();toast("انطفت الإشعارات")}catch(e){}}
+$("#bellBtn").addEventListener("click",bellSheet);
+// nudge: ring the bell once for visitors who haven't subscribed
+setTimeout(()=>{if(!$("#bellBtn").classList.contains("on"))$("#bellBtn").classList.add("ring")},6000);
+
 load();
 // refresh stock every 2 minutes while open
 setInterval(()=>{if(!document.hidden&&!document.querySelector(".modal.on"))fetch("data.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok&&r.json()).then(d=>{if(d){D=d;renderAll()}}).catch(()=>{})},120000);
