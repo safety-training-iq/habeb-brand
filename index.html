@@ -558,7 +558,7 @@ function shoeCard(s,i){
   const acts=s.status==="available"
     ?'<a class="btn btn-wa" data-book="'+esc(s.id)+'" target="_blank" rel="noopener">احجزها</a><button class="btn btn-ghost add" data-add="'+esc(s.id)+'" aria-label="أضف للسلة">'+(inCart?"✓":"＋")+'</button>'
     :'<button class="btn btn-ghost" data-open="'+esc(s.id)+'" style="opacity:.7">'+(s.status==="sold"?"انباعت 🔥":"محجوزة ⏳")+'</button>';
-  return '<article class="'+cls+'" style="animation-delay:'+Math.min(i,12)*40+'ms"><div class="ph" data-open="'+esc(s.id)+'"><img loading="lazy" src="'+esc(safeUrl(s.image))+'" alt="'+esc(s.name)+'">'+size+flag+'<div class="stamp"><span>'+stamp+'</span></div></div><div class="body"><h3>'+esc(s.name||"حذاء رياضي")+'</h3><div class="meta"><span class="price">'+fmt(p1())+' د.ع</span><span dir="ltr">#'+esc(s.id)+'</span></div><div class="acts">'+acts+'</div></div></article>';
+  return '<article class="'+cls+'" style="animation-delay:'+Math.min(i,12)*40+'ms"><div class="ph" data-open="'+esc(s.id)+'"><img '+(i<4?'loading="eager" fetchpriority="high"':'loading="lazy"')+' decoding="async" src="'+esc(safeUrl(s.image))+'" alt="'+esc(s.name)+'">'+size+flag+'<div class="stamp"><span>'+stamp+'</span></div></div><div class="body"><h3>'+esc(s.name||"حذاء رياضي")+'</h3><div class="meta"><span class="price">'+fmt(p1())+' د.ع</span><span dir="ltr">#'+esc(s.id)+'</span></div><div class="acts">'+acts+'</div></div></article>';
 }
 function renderGrid(){
   const hide=$("#hideSold").checked;

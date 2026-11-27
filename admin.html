@@ -91,6 +91,10 @@ details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font
 .sl label{font-size:13px;font-weight:700;color:var(--muted)}
 .sl input{width:100%;accent-color:var(--lime)}
 .st-item .btn.sm{width:100%}
+
+.st-ph{position:relative}
+.st-st{position:absolute;inset:auto 6px 6px 6px;background:rgba(11,11,13,.85);color:var(--lime);font-size:12px;font-weight:700;border-radius:8px;padding:4px 6px;text-align:center;display:none}
+.st-st.on{display:block}
 </style>
 </head>
 <body>
@@ -144,6 +148,7 @@ details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font
     <label class="check" style="margin-top:10px"><input type="checkbox" id="whiteBg"> ⬜ حط الحذاء على خلفية بيضاء احترافية (تلقائي)</label>
     <p class="muted" style="margin-top:4px">تكدر تختار عدة صور مرة وحدة، وتكتب قياس كل وحدة. أول مرة تستخدم الخلفية البيضاء يحمّل الأداة (حوالي 40 ميغا) وبعدها تصير أسرع.</p>
     <datalist id="sizesList"></datalist>
+    <p class="muted" id="bgStatus" style="margin-top:2px;color:var(--lime)"></p>
     <div id="stageWrap" class="hidden">
       <h2 style="margin-top:14px">أحذية جاهزة للإضافة</h2>
       <div class="stage" id="stage"></div>
@@ -243,11 +248,11 @@ async function commitFiles(files,message){
   const base=ref.object.sha;
   const commit=await gh("/git/commits/"+base);
   const tree=[];
-  for(const [path,content] of Object.entries(files)){
-    if(content===null){tree.push({path,mode:"100644",type:"blob",sha:null});continue}
+  await Promise.all(Object.entries(files).map(async([path,content])=>{
+    if(content===null){tree.push({path,mode:"100644",type:"blob",sha:null});return}
     const blob=await gh("/git/blobs",{method:"POST",body:JSON.stringify({content,encoding:"base64"})});
     tree.push({path,mode:"100644",type:"blob",sha:blob.sha});
-  }
+  }));
   const nt=await gh("/git/trees",{method:"POST",body:JSON.stringify({base_tree:commit.tree.sha,tree})});
   const nc=await gh("/git/commits",{method:"POST",body:JSON.stringify({message,tree:nt.sha,parents:[base]})});
   await gh("/git/refs/heads/"+CFG.branch,{method:"PATCH",body:JSON.stringify({sha:nc.sha})});
@@ -270,12 +275,27 @@ function compress(file,max=1000){
 }
 
 // ---------- white background + image editor ----------
-let BGLIB=null;
+let BGLIB=null,BGMOD=null,USE_GPU=!!navigator.gpu,BG_READY=false,BG_WARM=null;
 async function bgLib(){
   if(BGLIB)return BGLIB;
   const urls=["https://esm.sh/@imgly/background-removal@1.7.0","https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm"];
-  let last;for(const u of urls){try{const m=await import(u);BGLIB=m.removeBackground||m.default;if(BGLIB)return BGLIB}catch(e){last=e}}
+  let last;for(const u of urls){try{const m=await import(u);BGMOD=m;BGLIB=m.removeBackground||m.default;if(BGLIB)return BGLIB}catch(e){last=e}}
   throw last||new Error("تعذر تحميل أداة الخلفية");
+}
+const bgCfg=progress=>({model:"isnet_quint8",device:USE_GPU?"gpu":"cpu",output:{format:"image/png"},progress});
+function bgStatus(t){const e=$("#bgStatus");if(e)e.textContent=t||""}
+// download the model in the background as soon as the panel opens, so the first photo is fast
+function warmBg(){
+  if(BG_WARM)return BG_WARM;
+  BG_WARM=(async()=>{
+    try{
+      bgStatus("⏳ جاري تجهيز أداة الخلفية البيضاء…");
+      await bgLib();
+      if(BGMOD&&BGMOD.preload){await BGMOD.preload(bgCfg((k,c,t)=>{if(t)bgStatus("⏳ تجهيز أداة الخلفية "+Math.round(c/t*100)+"% (مرة وحدة بس)")}))}
+      BG_READY=true;bgStatus("✓ أداة الخلفية البيضاء جاهزة");
+    }catch(e){console.warn(e);bgStatus("⚠️ تعذر تجهيز أداة الخلفية — تأكد من الإنترنت");BG_WARM=null}
+  })();
+  return BG_WARM;
 }
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=()=>rej(new Error("صورة غير صالحة"));i.src=src})}
 async function toCanvas(blob,max=1200){
@@ -298,12 +318,16 @@ function applyTh(it){
   if(th>0){const sc=255/(255-th);for(let i=3;i<a.length;i+=4){const v=a[i];a[i]=v<=th?0:Math.min(255,(v-th)*sc)}g.putImageData(d,0,0)}
   it.cutTh=c;
 }
-async function cutOut(it,label){
+async function cutOut(it,label,silent){
+  const say=t=>{if(silent){it._st=t;stageStatus(it)}else busy(true,label+"<br><small>"+t+"</small>")};
+  say(BG_READY?"جاري التبييض…":"جاري تجهيز الأداة…");
   const rb=await bgLib();
-  busy(true,label+"<br><small>جاري تحميل أداة الخلفية…</small>");
   const blob=await canvasBlob(it.orig);
-  const out=await rb(blob,{model:"isnet_quint8",output:{format:"image/png"},progress:(k,cur,tot)=>{if(tot)busy(true,label+"<br><small>تحميل الأداة "+Math.round(cur/tot*100)+"%</small>")}});
-  busy(true,label+"<br><small>جاري فصل الحذاء عن الخلفية…</small>");
+  const prog=(k,cur,tot)=>{if(tot&&cur<tot)say("تحميل الأداة "+Math.round(cur/tot*100)+"%");else say("جاري التبييض…")};
+  let out;
+  try{out=await rb(blob,bgCfg(prog))}
+  catch(e){if(!USE_GPU)throw e;USE_GPU=false;out=await rb(blob,bgCfg(prog))}
+  BG_READY=true;
   const u=URL.createObjectURL(out);const img=await loadImg(u);URL.revokeObjectURL(u);
   const c=document.createElement("canvas");c.width=it.orig.width;c.height=it.orig.height;c.getContext("2d").drawImage(img,0,0,c.width,c.height);
   it.cutRaw=c;applyTh(it);it.bbox=alphaBBox(it.cutTh);it.scale=1;it.ox=0;it.oy=0;it.undo=[];
@@ -329,7 +353,7 @@ function finalize(it){
   const o=it.orig,k=Math.min(1,1000/Math.max(o.width,o.height));const c=document.createElement("canvas");c.width=Math.round(o.width*k);c.height=Math.round(o.height*k);c.getContext("2d").drawImage(o,0,0,c.width,c.height);return exportCanvas(c,.8);
 }
 async function makeItem(blob,label,wantWhite){
-  const it={orig:await toCanvas(blob),mode:"orig",th:40,scale:1,ox:0,oy:0,shadow:true,undo:[]};
+  const it={orig:await toCanvas(blob,1100),mode:"orig",th:40,scale:1,ox:0,oy:0,shadow:true,undo:[]};
   if(wantWhite){try{await cutOut(it,label);it.mode="white"}catch(e){console.error(e);if(!makeItem._warned){makeItem._warned=true;alert("ما كدرت أبيّض الخلفية ("+(e.message||e)+")، راح تبقى الصورة الأصلية. تأكد من الإنترنت وجرّب من زر «🎨 تحكم بالصورة».")}}}
   Object.assign(it,finalize(it));return it;
 }
@@ -460,25 +484,39 @@ function renderAll(){renderShoes();renderOffers();renderAnn();renderSettings();d
 // ---------- staging new shoes ----------
 function renderStage(){
   $("#stageWrap").classList.toggle("hidden",!stageItems.length);
-  $("#stage").innerHTML=stageItems.map((it,i)=>`<div class="st-item" data-si="${i}"><img src="${it.dataUrl}" alt=""><div class="in">
+  $("#stage").innerHTML=stageItems.map((it,i)=>`<div class="st-item" data-si="${i}" data-uid="${it.uid}"><div class="st-ph"><img src="${it.dataUrl}" alt=""><span class="st-st ${it.pending?"on":""}">${esc(it._st||"⏳ بالانتظار")}</span></div><div class="in">
     <input class="sz" type="text" inputmode="decimal" list="sizesList" placeholder="القياس" value="${esc(it.size)}" data-sf="size">
     <input type="text" placeholder="الاسم (اختياري)" value="${esc(it.name)}" data-sf="name">
     <button class="btn sm" data-sedit>🎨 تحكم بالصورة</button>
     <div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" data-sf="featured" ${it.featured?"checked":""}> مميز</label><button class="btn sm red" data-sdel>✕</button></div>
-  </div></div>`).join("")+(stageItems.length?`<button class="btn lime" id="stageAdd" style="grid-column:1/-1">✓ أضف ${stageItems.length} للقائمة</button>`:"");
+  </div></div>`).join("")+(stageItems.length?`<button class="btn lime" id="stageAdd" style="grid-column:1/-1"></button>`:"");
+  stageBtn();
+}
+function stageBtn(){const b=$("#stageAdd");if(!b)return;const p=stageItems.filter(x=>x.pending).length;b.disabled=p>0;b.textContent=p?"⏳ انتظر — باقي "+p+" صورة تتبيض (اكتب القياسات هسه)":"✓ أضف "+stageItems.length+" للقائمة"}
+function stageStatus(it){const c=document.querySelector('[data-uid="'+it.uid+'"]');if(!c)return;const st=c.querySelector(".st-st");st.textContent=it._st||"";st.classList.toggle("on",!!it.pending);c.querySelector(".st-ph img").src=it.dataUrl}
+let QBUSY=false;
+async function runQueue(){
+  if(QBUSY)return;QBUSY=true;
+  for(;;){const it=stageItems.find(x=>x.pending);if(!it)break;
+    try{await cutOut(it,"",true);it.mode="white";Object.assign(it,finalize(it))}
+    catch(e){console.error(e);it._st="";if(!makeItem._warned){makeItem._warned=true;alert("ما كدرت أبيّض الخلفية ("+(e.message||e)+")، الصور بقت أصلية. تكدر تجرب بعدين من «🎨 تحكم بالصورة».")}}
+    it.pending=false;it._st="";stageStatus(it);stageBtn();
+  }
+  QBUSY=false;
 }
 $("#pick").addEventListener("change",async e=>{
   const fl=[...e.target.files];e.target.value="";if(!fl.length)return;
   busy(true,"جاري تجهيز الصور…");
-  makeItem._warned=false;let i=0;const ww=$("#whiteBg").checked;for(const f of fl){i++;try{busy(true,"صورة "+i+" من "+fl.length);const it=await makeItem(f,"صورة "+i+" من "+fl.length,ww);it.size="";it.name="";it.featured=false;stageItems.push(it)}catch(err){alert(err.message)}}
-  busy(false);renderStage();
+  makeItem._warned=false;const ww=$("#whiteBg").checked;
+  for(const f of fl){try{const it=await makeItem(f,"",false);Object.assign(it,{uid:uid("u"),size:"",name:"",featured:false,pending:ww,_st:ww?"⏳ بالانتظار":""});stageItems.push(it)}catch(err){alert(err.message)}}
+  busy(false);renderStage();if(ww)runQueue();
   const first=$("#stage .sz");first&&first.focus();
 });
 $("#stage").addEventListener("input",e=>{const el=e.target;const i=+el.closest("[data-si]").dataset.si;const k=el.dataset.sf;if(!k)return;stageItems[i][k]=el.type==="checkbox"?el.checked:el.value});
 $("#stage").addEventListener("change",e=>{const el=e.target;if(el.type==="checkbox"){const i=+el.closest("[data-si]").dataset.si;stageItems[i].featured=el.checked}});
 $("#stage").addEventListener("click",e=>{
-  if(e.target.closest("[data-sedit]")){const it=stageItems[+e.target.closest("[data-si]").dataset.si];openEditor(it,()=>renderStage());return}
-  if(e.target.closest("[data-sdel]")){stageItems.splice(+e.target.closest("[data-si]").dataset.si,1);renderStage();return}
+  if(e.target.closest("[data-sedit]")){const it=stageItems[+e.target.closest("[data-si]").dataset.si];if(it.pending)return alert("لحظة، الصورة بعدها تتبيض…");openEditor(it,()=>renderStage());return}
+  if(e.target.closest("[data-sdel]")){const it=stageItems[+e.target.closest("[data-si]").dataset.si];if(it.pending&&QBUSY&&it._st&&it._st!=="⏳ بالانتظار")return alert("لحظة يخلص تبييضها وبعدين احذفها");stageItems.splice(+e.target.closest("[data-si]").dataset.si,1);renderStage();return}
   if(e.target.id==="stageAdd"){
     const missing=stageItems.filter(x=>!String(x.size).trim()).length;
     if(missing&&!confirm(missing+" حذاء بدون قياس. تكمل؟"))return;
@@ -571,10 +609,10 @@ async function start(){
   busy(true,"جاري التحميل…");
   try{D=await loadData();D._v=Date.now();ORIG=JSON.stringify(D);
     D.settings=D.settings||{};D.shoes=D.shoes||[];D.offers=D.offers||[];D.announcements=D.announcements||[];ORIG=JSON.stringify(D);
-    $("#loginView").classList.add("hidden");$("#appView").classList.remove("hidden");renderAll();busy(false);return true}
+    $("#loginView").classList.add("hidden");$("#appView").classList.remove("hidden");renderAll();busy(false);if($("#whiteBg").checked)setTimeout(warmBg,800);return true}
   catch(err){busy(false);$("#loginMsg").innerHTML='<div class="msg err">'+esc(err.status===401?"المفتاح غير صحيح أو منتهي.":err.status===404?"ما لكيت المستودع، تأكد من الاسم وصلاحية المفتاح عليه.":"تعذر الاتصال: "+err.message)+'</div>';return false}
 }
-$("#whiteBg").checked=LS.get("hb_white")!=="0";$("#whiteBg").addEventListener("change",e=>LS.set("hb_white",e.target.checked?"1":"0"));
+$("#whiteBg").checked=LS.get("hb_white")!=="0";$("#whiteBg").addEventListener("change",e=>{LS.set("hb_white",e.target.checked?"1":"0");if(e.target.checked)warmBg()});
 bindEditor();
 const siteUrl=()=>location.origin+location.pathname.replace(/admin\.html.*$/,"");
 const TPL={
