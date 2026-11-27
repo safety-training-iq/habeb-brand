@@ -13,7 +13,8 @@
     "facebook": "https://www.facebook.com/share/1BXjR92Tfv/",
     "instagram": "https://www.instagram.com/brand_habeb",
     "tiktok": "https://www.tiktok.com/@habeb.basmaya",
-    "delivery": 5000
+    "delivery": 5000,
+    "onesignalAppId": ""
   },
   "announcements": [
     {
@@ -61,6 +62,17 @@
     }
   ],
   "shoes": [
+    {
+      "id": "s6",
+      "name": "حذاء رياضي",
+      "size": "36",
+      "category": "رياضي",
+      "image": "images/s6-mwz28amr.webp",
+      "status": "available",
+      "note": "",
+      "featured": false,
+      "added": "2026-11-27"
+    },
     {
       "id": "s1",
       "name": "رياضي برتقالي نيون",
