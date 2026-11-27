@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>لوحة تحكم حبيب براند</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0b0d">
+<link rel="icon" href="assets/icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0d;--bg2:#111114;--card:#17171b;--line:#2a2a31;--lime:#c6ff00;--orange:#ff5a1f;--pink:#ff2e63;--yellow:#ffc400;--text:#f5f5f6;--muted:#a1a1aa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Cairo",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:110px}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+button{cursor:pointer;border:0;color:inherit;background:none}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px}
+header{position:sticky;top:0;z-index:20;background:rgba(11,11,13,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;height:60px;gap:10px}
+.top img{height:36px}
+.top a{color:var(--lime);font-weight:700;font-size:14px;text-decoration:none}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 0 10px}
+.tab{flex:0 0 auto;padding:8px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:15px}
+.tab.on{background:var(--lime);color:#0b0b0d;border-color:var(--lime)}
+.panel{display:none;padding:16px 0}
+.panel.on{display:block}
+h2{font-size:22px;font-weight:900;margin-bottom:10px}
+.muted{color:var(--muted);font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:12px;font-weight:700;background:var(--card);border:1px solid var(--line)}
+.btn.lime{background:var(--lime);color:#0b0b0d;border-color:var(--lime)}
+.btn.red{background:rgba(255,46,99,.12);color:var(--pink);border-color:rgba(255,46,99,.4)}
+.btn.sm{padding:7px 11px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.field{display:grid;gap:4px;margin-bottom:10px}
+.field label{font-size:13px;color:var(--muted);font-weight:700}
+input[type=text],input[type=tel],input[type=number],input[type=url],input[type=password],select,textarea{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--lime);border-color:transparent}
+textarea{min-height:70px;resize:vertical}
+.check{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
+.check input{width:18px;height:18px;accent-color:var(--lime)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.stat b{display:block;font-size:24px;font-weight:900}
+.stat.a b{color:var(--lime)}.stat.r b{color:var(--yellow)}.stat.s b{color:var(--pink)}
+.shoe{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:start}
+.shoe img{width:84px;height:104px;object-fit:cover;border-radius:12px;background:#222}
+.shoe .nm{font-weight:700}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0}
+.seg button{flex:1;padding:7px 4px;font-size:13px;font-weight:700;color:var(--muted)}
+.seg button.on[data-st=available]{background:var(--lime);color:#0b0b0d}
+.seg button.on[data-st=reserved]{background:var(--yellow);color:#0b0b0d}
+.seg button.on[data-st=sold]{background:var(--pink);color:#fff}
+.edit{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.edit.on{display:block}
+.chg{outline:2px dashed var(--orange);outline-offset:2px}
+.stage{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
+.st-item{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.st-item img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.st-item .in{padding:8px;display:grid;gap:6px}
+.st-item input.sz{font-size:22px;font-weight:900;text-align:center;color:var(--lime)}
+.pub{position:fixed;inset:auto 0 0 0;z-index:30;background:rgba(17,17,20,.96);border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:none}
+.pub.on{display:block}
+.pub .wrap{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.login{max-width:460px;margin:40px auto;padding:0 16px}
+.login img{height:70px;margin:0 auto 16px;display:block}
+.msg{padding:10px 12px;border-radius:12px;font-weight:700;font-size:14px;margin:10px 0}
+.msg.err{background:rgba(255,46,99,.12);color:#ff8aa8}
+.msg.ok{background:rgba(198,255,0,.1);color:var(--lime)}
+.hidden{display:none!important}
+details.help{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:14px}
+details.help summary{font-weight:700;cursor:pointer}
+details.help ol{padding-inline-start:20px;margin-top:8px;color:var(--muted);font-size:14px;display:grid;gap:4px}
+.filter{display:flex;gap:6px;overflow-x:auto;margin:8px 0}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:none;place-items:center;font-weight:900;font-size:18px;text-align:center;padding:20px}
+.overlay.on{display:grid}
+.spin{width:44px;height:44px;border:4px solid #333;border-top-color:var(--lime);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginView">
+  <img src="assets/logo-white.png" alt="حبيب براند">
+  <div class="card">
+    <h2>لوحة التحكم 🔐</h2>
+    <p class="muted" style="margin-bottom:12px">هذي الصفحة إلك بس. تدخل مرة وحدة من موبايلك ويبقى محفوظ.</p>
+    <div class="field"><label>مفتاح الدخول (GitHub Token)</label><input type="password" id="tok" autocomplete="off" placeholder="github_pat_..."></div>
+    <div class="field" id="repoFields"><label>حساب / مستودع الموقع</label><div class="row"><input type="text" id="owner" placeholder="اسم الحساب" style="flex:1" dir="ltr"><input type="text" id="repo" placeholder="habeb-brand" style="flex:1" dir="ltr"></div></div>
+    <button class="btn lime" id="loginBtn" style="width:100%">دخول</button>
+    <div id="loginMsg"></div>
+  </div>
+  <details class="help"><summary>شلون أطلع مفتاح الدخول؟ (مرة وحدة بس)</summary>
+    <ol>
+      <li>افتح github.com وسجّل دخول بحسابك.</li>
+      <li>Settings ← Developer settings ← Personal access tokens ← Fine-grained tokens ← Generate new token.</li>
+      <li>الاسم: habeb-admin — Expiration: اختار المدة اللي تريدها (مثلاً سنة).</li>
+      <li>Repository access: Only select repositories ← اختار مستودع الموقع.</li>
+      <li>Permissions ← Repository permissions ← Contents: Read and write.</li>
+      <li>Generate token وانسخه والصقه هنا. لا تنطيه لأي أحد.</li>
+    </ol>
+  </details>
+</div>
+
+<!-- APP -->
+<div id="appView" class="hidden">
+<header>
+  <div class="wrap">
+    <div class="top"><img src="assets/logo-white.png" alt=""><div class="row"><a href="./" target="_blank">👁️ شوف الموقع</a><button class="btn sm" id="logout">خروج</button></div></div>
+    <div class="tabs">
+      <button class="tab on" data-tab="shoes">👟 الأحذية</button>
+      <button class="tab" data-tab="offers">🔥 العروض</button>
+      <button class="tab" data-tab="ann">📢 التبليغات</button>
+      <button class="tab" data-tab="settings">⚙️ الإعدادات</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- SHOES -->
+  <div class="panel on" id="p-shoes">
+    <div class="stats"><div class="stat a"><b id="cA">0</b>متوفر</div><div class="stat r"><b id="cR">0</b>محجوز</div><div class="stat s"><b id="cS">0</b>مباع</div></div>
+    <div class="row">
+      <label class="btn lime" style="flex:1">📸 إضافة أحذية جديدة<input type="file" id="pick" accept="image/*" multiple hidden></label>
+      <button class="btn red sm" id="cleanSold">🧹 حذف كل المباع</button>
+    </div>
+    <p class="muted" style="margin-top:6px">تكدر تختار عدة صور مرة وحدة، وتكتب قياس كل وحدة.</p>
+    <div id="stageWrap" class="hidden">
+      <h2 style="margin-top:14px">أحذية جاهزة للإضافة</h2>
+      <div class="stage" id="stage"></div>
+    </div>
+    <div class="filter" id="filter">
+      <button class="tab on" data-f="all">الكل</button><button class="tab" data-f="available">متوفر</button><button class="tab" data-f="reserved">محجوز</button><button class="tab" data-f="sold">مباع</button>
+    </div>
+    <input type="text" id="search" placeholder="🔍 ابحث بالكود أو القياس أو الاسم">
+    <div id="shoeList" style="margin-top:10px"></div>
+  </div>
+
+  <!-- OFFERS -->
+  <div class="panel" id="p-offers">
+    <div class="row" style="justify-content:space-between"><h2>العروض</h2><button class="btn lime sm" id="addOffer">＋ عرض جديد</button></div>
+    <div id="offerList"></div>
+  </div>
+
+  <!-- ANNOUNCEMENTS -->
+  <div class="panel" id="p-ann">
+    <div class="row" style="justify-content:space-between"><h2>التبليغات (الشريط المتحرك)</h2><button class="btn lime sm" id="addAnn">＋ تبليغ جديد</button></div>
+    <p class="muted" style="margin-bottom:10px">تظهر بأعلى الموقع بالشريط الأخضر.</p>
+    <div id="annList"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="p-settings">
+    <h2>الإعدادات</h2>
+    <div class="card" id="setForm"></div>
+  </div>
+</div>
+
+<div class="pub" id="pubBar"><div class="wrap"><span><b id="pubN">0</b> تعديل غير منشور</span><div class="row"><button class="btn sm" id="discard">تراجع</button><button class="btn lime" id="publish">🚀 نشر على الموقع</button></div></div></div>
+</div>
+
+<div class="overlay" id="busy"><div><div class="spin"></div><div id="busyTxt">جاري النشر…</div></div></div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const LS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const todayLocal=()=>new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Baghdad"});
+const uid=p=>p+Date.now().toString(36).slice(-4)+Math.random().toString(36).slice(2,4);
+
+// ---------- GitHub ----------
+let CFG={token:"",owner:"",repo:"",branch:"main"};
+function guessRepo(){
+  const h=location.hostname;
+  if(h.endsWith(".github.io")){const owner=h.split(".")[0];const seg=location.pathname.split("/").filter(Boolean)[0];const repo=(seg&&!/\.html$/.test(seg))?seg:h;return{owner,repo}}
+  return{owner:LS.get("hb_owner")||"",repo:LS.get("hb_repo")||"habeb-brand"};
+}
+async function gh(path,opt={}){
+  const r=await fetch("https://api.github.com/repos/"+CFG.owner+"/"+CFG.repo+path,{...opt,headers:{"Authorization":"Bearer "+CFG.token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28",...(opt.body?{"Content-Type":"application/json"}:{})}});
+  if(!r.ok){let m="";try{m=(await r.json()).message}catch(e){}const err=new Error(r.status+" "+m);err.status=r.status;throw err}
+  return r.status===204?null:r.json();
+}
+const b64ToUtf8=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g,"")),c=>c.charCodeAt(0)));
+const utf8ToB64=s=>{const bytes=new TextEncoder().encode(s);let bin="";for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(bin)};
+async function loadData(){
+  const info=await gh("");CFG.branch=info.default_branch||"main";
+  const f=await gh("/contents/data.json?ref="+encodeURIComponent(CFG.branch));
+  return JSON.parse(b64ToUtf8(f.content));
+}
+// commit many files at once: files = {path: base64 | null(delete)}
+async function commitFiles(files,message){
+  const ref=await gh("/git/ref/heads/"+CFG.branch);
+  const base=ref.object.sha;
+  const commit=await gh("/git/commits/"+base);
+  const tree=[];
+  for(const [path,content] of Object.entries(files)){
+    if(content===null){tree.push({path,mode:"100644",type:"blob",sha:null});continue}
+    const blob=await gh("/git/blobs",{method:"POST",body:JSON.stringify({content,encoding:"base64"})});
+    tree.push({path,mode:"100644",type:"blob",sha:blob.sha});
+  }
+  const nt=await gh("/git/trees",{method:"POST",body:JSON.stringify({base_tree:commit.tree.sha,tree})});
+  const nc=await gh("/git/commits",{method:"POST",body:JSON.stringify({message,tree:nt.sha,parents:[base]})});
+  await gh("/git/refs/heads/"+CFG.branch,{method:"PATCH",body:JSON.stringify({sha:nc.sha})});
+}
+
+// ---------- image ----------
+function compress(file,max=1000){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file);const img=new Image();
+    img.onload=()=>{
+      let w=img.naturalWidth,h=img.naturalHeight;const k=Math.min(1,max/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+      const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);
+      let d=c.toDataURL("image/webp",.8),ext="webp";
+      if(!d.startsWith("data:image/webp")){d=c.toDataURL("image/jpeg",.82);ext="jpg"}
+      URL.revokeObjectURL(url);res({b64:d.split(",")[1],dataUrl:d,ext});
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("صورة غير صالحة"))};
+    img.src=url;
+  });
+}
+
+// ---------- state ----------
+let D=null,ORIG="",files={},preview={},stageItems=[],fStatus="all";
+const S=()=>D.settings;
+function dirty(){const n=Object.keys(files).length+(JSON.stringify(D)!==ORIG?1:0);$("#pubN").textContent=Object.keys(files).filter(k=>files[k]!==null).length+(JSON.stringify(D)!==ORIG?1:0);$("#pubBar").classList.toggle("on",n>0)}
+function imgSrc(p){return preview[p]||(p?p+"?v="+(D._v||""):"")}
+function nextId(){let m=0;D.shoes.forEach(s=>{const n=parseInt(String(s.id).replace(/\D/g,""),10);if(n>m)m=n});return "s"+(m+1)}
+
+// ---------- render: shoes ----------
+function renderShoes(){
+  const c={available:0,reserved:0,sold:0};D.shoes.forEach(s=>c[s.status]=(c[s.status]||0)+1);
+  $("#cA").textContent=c.available;$("#cR").textContent=c.reserved;$("#cS").textContent=c.sold;
+  const q=$("#search").value.trim();
+  let list=D.shoes.filter(s=>fStatus==="all"||s.status===fStatus);
+  if(q)list=list.filter(s=>[s.id,s.size,s.name].join(" ").includes(q));
+  list=list.slice().sort((a,b)=>String(b.added||"").localeCompare(String(a.added||""))||(parseInt(String(b.id).slice(1))||0)-(parseInt(String(a.id).slice(1))||0));
+  $("#shoeList").innerHTML=list.length?list.map(s=>`
+   <div class="card" data-id="${esc(s.id)}">
+    <div class="shoe"><img src="${esc(imgSrc(s.image))}" alt="">
+     <div><div class="nm">${esc(s.name||"حذاء")}</div><div class="muted">قياس <b style="color:var(--lime)">${esc(s.size||"—")}</b> • #${esc(s.id)} • ${esc(s.added||"")}${s.featured?" • 🔥 مميز":""}</div>
+      <div class="seg">${[["available","متوفر"],["reserved","محجوز"],["sold","مباع"]].map(([k,l])=>`<button data-st="${k}" class="${s.status===k?"on":""}">${l}</button>`).join("")}</div>
+      <div class="row"><button class="btn sm" data-edit>✏️ تعديل</button><button class="btn sm red" data-del>🗑️ حذف</button></div>
+     </div></div>
+    <div class="edit">
+     <div class="field"><label>الاسم / الوصف القصير</label><input type="text" data-k="name" value="${esc(s.name)}"></div>
+     <div class="row"><div class="field" style="flex:1"><label>القياس</label><input type="text" inputmode="decimal" data-k="size" value="${esc(s.size)}"></div><div class="field" style="flex:1"><label>الصنف</label><input type="text" data-k="category" value="${esc(s.category||"")}"></div></div>
+     <div class="field"><label>ملاحظة (اختياري)</label><input type="text" data-k="note" value="${esc(s.note||"")}"></div>
+     <div class="row"><label class="check"><input type="checkbox" data-k="featured" ${s.featured?"checked":""}> 🔥 مميز</label><label class="btn sm">🖼️ تغيير الصورة<input type="file" accept="image/*" data-replace hidden></label></div>
+    </div>
+   </div>`).join(""):'<p class="muted">ماكو أحذية هنا.</p>';
+}
+// ---------- render: offers ----------
+function renderOffers(){
+  $("#offerList").innerHTML=D.offers.length?D.offers.map((o,i)=>`
+   <div class="card" data-i="${i}">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px"><label class="check"><input type="checkbox" data-ok="active" ${o.active!==false?"checked":""}> ظاهر بالموقع</label><div class="row"><button class="btn sm" data-mv="-1">⬆️</button><button class="btn sm" data-mv="1">⬇️</button><button class="btn sm red" data-odel>حذف</button></div></div>
+    <div class="field"><label>عنوان العرض</label><input type="text" data-ok="title" value="${esc(o.title)}"></div>
+    <div class="field"><label>التفاصيل</label><textarea data-ok="desc">${esc(o.desc)}</textarea></div>
+    <div class="field"><label>شارة صغيرة (مثل: وفّر 5,000)</label><input type="text" data-ok="badge" value="${esc(o.badge||"")}"></div>
+    <div class="row">${o.image?`<img src="${esc(imgSrc(o.image))}" style="height:60px;border-radius:8px"><button class="btn sm red" data-oimgdel>إزالة الصورة</button>`:""}<label class="btn sm">🖼️ ${o.image?"تغيير":"إضافة"} صورة<input type="file" accept="image/*" data-oimg hidden></label></div>
+   </div>`).join(""):'<p class="muted">ماكو عروض. اضغط «عرض جديد».</p>';
+}
+function renderAnn(){
+  $("#annList").innerHTML=D.announcements.length?D.announcements.map((a,i)=>`
+   <div class="card" data-i="${i}"><div class="field"><input type="text" data-ak="text" value="${esc(a.text)}" placeholder="مثال: 🔥 نزلت دفعة جديدة اليوم"></div>
+   <div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" data-ak="active" ${a.active!==false?"checked":""}> ظاهر</label><button class="btn sm red" data-adel>حذف</button></div></div>`).join(""):'<p class="muted">ماكو تبليغات.</p>';
+}
+const SET_FIELDS=[
+  ["price1","سعر القطعة الوحدة (دينار)","number"],["price2","سعر القطعتين (دينار)","number"],
+  ["phone","رقم الاتصال","tel"],["whatsapp","رقم الواتساب بالصيغة الدولية (مثل 9647710258672)","tel"],
+  ["address","عنوان المحل","text"],["hours","أوقات الدوام (اختياري، مثال: يومياً 4 العصر - 11 بالليل)","text"],
+  ["mapsLink","رابط موقع المحل من خرائط Google (انسخه من زر مشاركة الموقع)","url"],["mapsQuery","اسم المنطقة للخريطة المصغّرة","text"],
+  ["group","رابط كروب الواتساب","url"],["tiktok","رابط تيك توك","url"],["instagram","رابط انستغرام","url"],["facebook","رابط فيسبوك","url"]];
+function renderSettings(){
+  $("#setForm").innerHTML=SET_FIELDS.map(([k,l,t])=>`<div class="field"><label>${l}</label><input type="${t==="number"?"number":t==="tel"?"tel":"text"}" ${t==="url"||t==="tel"?'dir="ltr"':""} data-sk="${k}" value="${esc(S()[k]??"")}"></div>`).join("");
+}
+function renderAll(){renderShoes();renderOffers();renderAnn();renderSettings();dirty()}
+
+// ---------- staging new shoes ----------
+function renderStage(){
+  $("#stageWrap").classList.toggle("hidden",!stageItems.length);
+  $("#stage").innerHTML=stageItems.map((it,i)=>`<div class="st-item" data-si="${i}"><img src="${it.dataUrl}" alt=""><div class="in">
+    <input class="sz" type="text" inputmode="decimal" placeholder="القياس" value="${esc(it.size)}" data-sf="size">
+    <input type="text" placeholder="الاسم (اختياري)" value="${esc(it.name)}" data-sf="name">
+    <div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" data-sf="featured" ${it.featured?"checked":""}> مميز</label><button class="btn sm red" data-sdel>✕</button></div>
+  </div></div>`).join("")+(stageItems.length?`<button class="btn lime" id="stageAdd" style="grid-column:1/-1">✓ أضف ${stageItems.length} للقائمة</button>`:"");
+}
+$("#pick").addEventListener("change",async e=>{
+  const fl=[...e.target.files];e.target.value="";if(!fl.length)return;
+  busy(true,"جاري تجهيز الصور…");
+  for(const f of fl){try{const r=await compress(f);stageItems.push({...r,size:"",name:"",featured:false})}catch(err){alert(err.message)}}
+  busy(false);renderStage();
+  const first=$("#stage .sz");first&&first.focus();
+});
+$("#stage").addEventListener("input",e=>{const el=e.target;const i=+el.closest("[data-si]").dataset.si;const k=el.dataset.sf;if(!k)return;stageItems[i][k]=el.type==="checkbox"?el.checked:el.value});
+$("#stage").addEventListener("change",e=>{const el=e.target;if(el.type==="checkbox"){const i=+el.closest("[data-si]").dataset.si;stageItems[i].featured=el.checked}});
+$("#stage").addEventListener("click",e=>{
+  if(e.target.closest("[data-sdel]")){stageItems.splice(+e.target.closest("[data-si]").dataset.si,1);renderStage();return}
+  if(e.target.id==="stageAdd"){
+    const missing=stageItems.filter(x=>!String(x.size).trim()).length;
+    if(missing&&!confirm(missing+" حذاء بدون قياس. تكمل؟"))return;
+    stageItems.forEach(it=>{
+      const id=nextId();const path="images/"+id+"-"+Date.now().toString(36)+"."+it.ext;
+      files[path]=it.b64;preview[path]=it.dataUrl;
+      D.shoes.unshift({id,name:it.name.trim()||"حذاء رياضي",size:String(it.size).trim(),category:"رياضي",image:path,status:"available",note:"",featured:!!it.featured,added:todayLocal()});
+    });
+    stageItems=[];renderStage();renderShoes();dirty();
+    window.scrollTo({top:document.querySelector("#pubBar").offsetTop,behavior:"smooth"});
+  }
+});
+
+// ---------- shoe list events ----------
+const findShoe=el=>D.shoes.find(s=>s.id===el.closest("[data-id]").dataset.id);
+$("#shoeList").addEventListener("click",e=>{
+  const card=e.target.closest("[data-id]");if(!card)return;const s=findShoe(card);
+  const st=e.target.closest("[data-st]");
+  if(st){s.status=st.dataset.st;renderShoes();dirty();return}
+  if(e.target.closest("[data-edit]")){card.querySelector(".edit").classList.toggle("on");return}
+  if(e.target.closest("[data-del]")){if(!confirm("تحذف الحذاء #"+s.id+" نهائياً؟"))return;removeImage(s.image);D.shoes=D.shoes.filter(x=>x!==s);renderShoes();dirty()}
+});
+$("#shoeList").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;const s=findShoe(e.target);s[k]=e.target.type==="checkbox"?e.target.checked:e.target.value;dirty()});
+$("#shoeList").addEventListener("change",async e=>{
+  if(e.target.dataset.k==="featured"){const s=findShoe(e.target);s.featured=e.target.checked;dirty()}
+  if(e.target.hasAttribute("data-replace")){const f=e.target.files[0];if(!f)return;const s=findShoe(e.target);
+    const r=await compress(f);removeImage(s.image);const path="images/"+s.id+"-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;s.image=path;renderShoes();dirty()}
+});
+function removeImage(p){if(!p||!/^images\//.test(p))return;if(files[p]!==undefined&&files[p]!==null){delete files[p];delete preview[p]}else files[p]=null}
+$("#cleanSold").addEventListener("click",()=>{const sold=D.shoes.filter(s=>s.status==="sold");if(!sold.length)return alert("ماكو أحذية مباعة.");if(!confirm("تحذف "+sold.length+" حذاء مباع مع صورهم؟"))return;sold.forEach(s=>removeImage(s.image));D.shoes=D.shoes.filter(s=>s.status!=="sold");renderShoes();dirty()});
+$("#filter").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;fStatus=b.dataset.f;document.querySelectorAll("#filter .tab").forEach(x=>x.classList.toggle("on",x===b));renderShoes()});
+$("#search").addEventListener("input",renderShoes);
+
+// ---------- offers / ann / settings events ----------
+$("#addOffer").addEventListener("click",()=>{D.offers.unshift({id:uid("o"),title:"عرض جديد",desc:"",badge:"",active:true});renderOffers();dirty()});
+$("#offerList").addEventListener("input",e=>{const k=e.target.dataset.ok;if(!k)return;const o=D.offers[+e.target.closest("[data-i]").dataset.i];o[k]=e.target.type==="checkbox"?e.target.checked:e.target.value;dirty()});
+$("#offerList").addEventListener("change",async e=>{
+  const card=e.target.closest("[data-i]");if(!card)return;const o=D.offers[+card.dataset.i];
+  if(e.target.dataset.ok==="active"){o.active=e.target.checked;dirty()}
+  if(e.target.hasAttribute("data-oimg")){const f=e.target.files[0];if(!f)return;const r=await compress(f,1200);removeImage(o.image);const path="images/offer-"+Date.now().toString(36)+"."+r.ext;files[path]=r.b64;preview[path]=r.dataUrl;o.image=path;renderOffers();dirty()}
+});
+$("#offerList").addEventListener("click",e=>{
+  const card=e.target.closest("[data-i]");if(!card)return;const i=+card.dataset.i;
+  if(e.target.closest("[data-odel]")){if(!confirm("تحذف العرض؟"))return;removeImage(D.offers[i].image);D.offers.splice(i,1)}
+  else if(e.target.closest("[data-oimgdel]")){removeImage(D.offers[i].image);delete D.offers[i].image}
+  else if(e.target.closest("[data-mv]")){const j=i+(+e.target.closest("[data-mv]").dataset.mv);if(j<0||j>=D.offers.length)return;[D.offers[i],D.offers[j]]=[D.offers[j],D.offers[i]]}
+  else return;
+  renderOffers();dirty();
+});
+$("#addAnn").addEventListener("click",()=>{D.announcements.unshift({id:uid("a"),text:"",active:true});renderAnn();dirty();const f=$("#annList input[type=text]");f&&f.focus()});
+$("#annList").addEventListener("input",e=>{const k=e.target.dataset.ak;if(!k)return;const a=D.announcements[+e.target.closest("[data-i]").dataset.i];a[k]=e.target.type==="checkbox"?e.target.checked:e.target.value;dirty()});
+$("#annList").addEventListener("change",e=>{if(e.target.dataset.ak==="active"){D.announcements[+e.target.closest("[data-i]").dataset.i].active=e.target.checked;dirty()}});
+$("#annList").addEventListener("click",e=>{if(e.target.closest("[data-adel]")){D.announcements.splice(+e.target.closest("[data-i]").dataset.i,1);renderAnn();dirty()}});
+$("#setForm").addEventListener("input",e=>{const k=e.target.dataset.sk;if(!k)return;let v=e.target.value;if(k==="price1"||k==="price2")v=Number(v)||0;if(k==="whatsapp")v=v.replace(/\D/g,"");S()[k]=v;dirty()});
+
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+b.dataset.tab))});
+
+// ---------- publish ----------
+function busy(on,t){$("#busy").classList.toggle("on",on);if(t)$("#busyTxt").textContent=t}
+$("#publish").addEventListener("click",async()=>{
+  // validate links
+  for(const k of ["mapsLink","group","tiktok","instagram","facebook"]){const v=S()[k];if(v&&!/^https:\/\//.test(v)){alert("الرابط لازم يبدي بـ https:// — "+k);return}}
+  busy(true,"جاري النشر على الموقع…");
+  try{
+    const clean=JSON.parse(JSON.stringify(D));delete clean._v;
+    clean.announcements=clean.announcements.filter(a=>String(a.text).trim());
+    const out={...files,"data.json":utf8ToB64(JSON.stringify(clean,null,2)+"\n")};
+    const n=Object.keys(files).filter(k=>files[k]!==null).length;
+    await commitFiles(out,"تحديث الموقع من لوحة التحكم"+(n?" (+"+n+" صورة)":""));
+    D=clean;D._v=Date.now();ORIG=JSON.stringify(D);files={};
+    busy(false);renderAll();
+    alert("✅ تم النشر! التغييرات تظهر بالموقع خلال دقيقة تقريباً.");
+  }catch(err){
+    busy(false);
+    alert(err.status===401||err.status===403?"المفتاح ما عنده صلاحية الكتابة. تأكد من Contents: Read and write.":"صار خطأ بالنشر: "+err.message+"\nجرّب مرة ثانية.");
+  }
+});
+$("#discard").addEventListener("click",async()=>{if(!confirm("تلغي كل التعديلات غير المنشورة؟"))return;files={};preview={};D=JSON.parse(ORIG);renderAll()});
+window.addEventListener("beforeunload",e=>{if($("#pubBar").classList.contains("on")){e.preventDefault();e.returnValue=""}});
+
+// ---------- login ----------
+async function start(){
+  busy(true,"جاري التحميل…");
+  try{D=await loadData();D._v=Date.now();ORIG=JSON.stringify(D);
+    D.settings=D.settings||{};D.shoes=D.shoes||[];D.offers=D.offers||[];D.announcements=D.announcements||[];ORIG=JSON.stringify(D);
+    $("#loginView").classList.add("hidden");$("#appView").classList.remove("hidden");renderAll();busy(false);return true}
+  catch(err){busy(false);$("#loginMsg").innerHTML='<div class="msg err">'+esc(err.status===401?"المفتاح غير صحيح أو منتهي.":err.status===404?"ما لكيت المستودع، تأكد من الاسم وصلاحية المفتاح عليه.":"تعذر الاتصال: "+err.message)+'</div>';return false}
+}
+const g=guessRepo();
+$("#owner").value=LS.get("hb_owner")||g.owner;$("#repo").value=LS.get("hb_repo")||g.repo;
+if(location.hostname.endsWith(".github.io"))$("#repoFields").classList.add("hidden");
+$("#loginBtn").addEventListener("click",async()=>{
+  CFG.token=$("#tok").value.trim();CFG.owner=$("#owner").value.trim();CFG.repo=$("#repo").value.trim();
+  if(!CFG.token||!CFG.owner||!CFG.repo){$("#loginMsg").innerHTML='<div class="msg err">اكمل كل الحقول.</div>';return}
+  if(await start()){LS.set("hb_tok",CFG.token);LS.set("hb_owner",CFG.owner);LS.set("hb_repo",CFG.repo)}
+});
+$("#logout").addEventListener("click",()=>{if(!confirm("تطلع وتمسح المفتاح من هذا الجهاز؟"))return;LS.del("hb_tok");location.reload()});
+if(LS.get("hb_tok")){CFG={token:LS.get("hb_tok"),owner:$("#owner").value,repo:$("#repo").value,branch:"main"};start()}
+})();
+</script>
+</body>
+</html>
